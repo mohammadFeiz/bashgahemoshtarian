@@ -1,0 +1,117 @@
+.home-card{
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255,255,255,.5);
+    border-right: 1px solid rgba(255,255,255,.5); 
+  }
+  .home-card-circle{
+    width:28px;
+    height:28px;
+    border-radius:100%;
+    background:rgba(222,222,222,.5);
+    display:flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .home-card-circle:after{
+    content:'';
+    width:20px;
+    height:20px;
+    border-radius:100%;
+    background: #DEF1F9;
+  }
+  .home-card-name{
+    color:#fff;
+    font-size:14px;
+  }
+  .home-card-poorsant-title{
+    color:#fff;
+    font-size:10px;
+    background:#1591C8;
+    padding:6px;
+    border-radius:8px;
+  }
+  .home-card-poorsant-value{
+    font-size:12px;
+    color:#127CAB;
+  }
+  .home-card-label{
+    background:#1591C8;
+    color:#fff;
+    height:48px;
+    width:40px;
+    font-size:8px;
+  }
+  .home-card-label-arrow{
+    border-top:8px solid #1591C8;
+    width:40px;
+    border-left:20px solid transparent;
+    border-right:20px solid transparent;
+    
+  }
+  .home-card-score{
+    font-size:20px;
+    color:#fff;
+  }
+  .home-tab{
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(6px);
+    border-radius: 10px 10px 0 0;
+    border-top: 1px solid rgba(255,255,255,.5);
+    border-right: 1px solid rgba(255,255,255,.5);
+    font-size:14px;
+    color:#fff;
+    height:32px;
+    margin-top:16px; 
+  }
+  .home-tab.active{
+    margin-top:0;
+    height:48px;
+    background: linear-gradient(180deg, rgba(0, 41, 255, 0.2) 16.67%, rgba(255, 255, 255, 0) 100%);
+    filter: drop-shadow(0px 1px 4px rgba(0, 0, 0, 0.25));
+    backdrop-filter: blur(6px);
+  }
+  .home-awards{
+    background:#F1F2F3
+  ;
+    border-radius:16px 16px 0 0;
+  }
+  .home-awards-header{
+    border-bottom:1px solid #A8C7D4;
+  }
+  .home-awards-handle{
+    height:3px;
+    width:40px;
+    background: #6BB3D3;
+  }
+  .home-award-cards{
+    display:grid;
+    grid-template-columns:50% 50%;
+    grid-gap:12px;
+    padding:12px;
+    overflow-y:auto;
+    box-sizing: border-box;
+  }
+  .home-award-card{
+    height:229px;
+    width:100%;
+    border-radius:12px;
+  }
+  .home-award-card-footer{
+    background:#fff;
+    border-radius: 12px 12px 0 0;
+  }
+  .home-details-cards{
+    margin-top:12px;
+  }
+  .home-detail-card{
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+    border-top: 1px solid rgba(255,255,255,.5);
+    border-right: 1px solid rgba(255,255,255,.5);
+    border-radius: 10px;
+    overflow:hidden;
+  }
+  

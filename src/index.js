@@ -1,15 +1,32 @@
-import React from 'react';
+import React,{Component} from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import RKS from 'react-keycloak-spa';
 import App from './App';
+import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 
+class Login extends Component{
+  render(){
+    return (
+      <RKS
+        config={{
+          "clientId":'Club',
+          "realm": "burux",
+          "url": "https://iam.burux.com/auth/",
+          "ssl-required": "external",
+          "resource": "Club",
+          "public-client": true,
+          "confidential-port": 0
+        }}
+        component={App}
+      />
+    )
+  }
+}
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <App />
-  </React.StrictMode>
 );
 
 // If you want your app to work offline and load faster, you can change

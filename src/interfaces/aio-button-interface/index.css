@@ -1,0 +1,14 @@
+.bottom-popover{
+    position:fixed;
+    bottom:-120px;
+    top:unset !important;
+    width:100%;
+    border-radius:12px 12px 0 0;
+  }
+  .popover-header{
+    height:36px;
+    display:flex;
+    align-items: center;
+    padding:0 12px;
+    border-bottom:1px solid #ddd;
+  }

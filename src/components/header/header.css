@@ -1,0 +1,15 @@
+.header-score{
+    box-sizing: border-box;
+    width: 86px;
+    height: 25px;
+    border-top: 1px solid rgba(255,255,255,.5);
+    border-right: 1px solid rgba(255,255,255,.5);
+    background: rgba(255, 255, 255, 0.2);
+    color:#fff;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+    transform:translateX(-24px);
+    align-items: center;
+    justify-content: flex-start;
+    padding:0 12px;
+    border-radius: 10px;
+  }
