@@ -1,5 +1,6 @@
 import React,{Component,createRef} from 'react';
 import AIOButton from './../../npm/aio-button/aio-button';
+import AIOStorage from './../../npm/aio-storage/aio-storage';
 import {Icon} from '@mdi/react';
 import {mdiMenu,mdiClose,mdiChevronRight,mdiChevronLeft,mdiCheckCircleOutline,mdiAlertOutline,mdiInformationOutline, mdiChevronDown} from '@mdi/js';
 import RVD from './../../npm/react-virtual-dom/react-virtual-dom';
@@ -10,6 +11,7 @@ export default class ReactSuperApp extends Component {
     constructor(props){
       super(props);
       let {touch = 'ontouchstart' in document.documentElement,splash,splashTime = 7000} = props;
+      this.storage = AIOStorage('rsa-cache')
       this.state = {
         navId:this.getNavId(),
         splash,
@@ -36,9 +38,34 @@ export default class ReactSuperApp extends Component {
           else{popups = popups.filter((o)=>o.id !== id);}
           this.setState({popups})
         },
+        changeTheme:(index)=>{
+          let {themes} = props;
+          this.theme = this.theme || 0;
+          if(index === 'init'){
+            this.theme = this.storage.load('theme',0);
+          }
+          else if(typeof(index) === 'number'){
+            this.theme = index;
+          }
+          else {
+            this.theme++;
+          }
+          this.storage.save(this.theme,'theme');
+          if(this.theme > themes.length - 1){this.theme = 0}
+          let target;
+          try{
+            target = themes[this.theme] || {};
+          }
+          catch{target = {}}
+          for(let prop in target){
+            document.documentElement.style.setProperty(prop, target[prop]);
+          }
+          
+        },
         setConfirm:this.setConfirm.bind(this),
         setNavId:(navId)=>this.setState({navId})
       }
+      if(props.themes){this.state.changeTheme('init')}
       if(splash){setTimeout(()=>this.setState({splash:false}),splashTime)}
       if(props.getActions){props.getActions({...this.state})}
     }
@@ -61,12 +88,12 @@ export default class ReactSuperApp extends Component {
                 {size:12},
                 {html:text,style:{color},align:'vh'},
                 {size:12},
-                {html:subtext,align:'vh',className:'size10'}
+                {html:subtext,align:'vh',className:'fs-10'}
               ]
             }}
           />
         )
-        confirm = {text:body,style:{background:'#fff',height:'fit-content',width:360},buttons:[{text:'بستن'}],backClose:true}
+        confirm = {text:body,style:{height:'fit-content',width:360},buttons:[{text:'بستن'}],backClose:true}
       }
       else{confirm = obj;}
       this.setState({confirm})
@@ -81,23 +108,11 @@ export default class ReactSuperApp extends Component {
       if(!navs.length){return false}
       return navs[0].id;
     }
-    navigation_layout() {
-      let {navs = [],navHeader,rtl} = this.props;
-      if(!navs.length){return false}
-      let {touch,navId} = this.state;
-      let props = {navs,navHeader,navId,onChange:(navId)=>this.setState({navId}),touch,rtl}
-      return {style:{overflow:'visible'},html: (<Navigation {...props}/>)};
-    }
-    page_layout(nav){
-      let {body = ()=>''} = this.props;
-      return {flex:1,column:[this.header_layout(nav),{flex:1,html:<div className='rsa-body'>{body(this.state)}</div>}]} 
-    }
     header_layout(nav){
-        let {touch} = this.state;
         let {header,sides = [],title = ()=>nav.text} = this.props;
         if(header === false){return false}
         return {
-          style:{flex:'none'},align:'v',className:'rsa-header' + (touch?' touch-mode':''),
+          style:{flex:'none'},align:'v',className:'rsa-header',
           row:[
             {size:60,show:!!sides.length,html:<Icon path={mdiMenu} size={1}/>,align:'vh',attrs:{onClick:()=>this.setState({sideOpen:!this.state.sideOpen})}},
             {show:!sides.length,size:24},
@@ -125,41 +140,61 @@ export default class ReactSuperApp extends Component {
     }
     getMainClassName(){
       let {confirm,popups,sideOpen} = this.state;
-      let {rtl} = this.props;
-      let className = 'rsa';
+      let {rtl,className:cls} = this.props;
+      let className = 'rsa-main';
+      className += cls?' ' + cls:'';
       className += rtl?' rtl':' ltr';
-      if(popups.length){className += ' has-opened-popup'}
       if(confirm || popups.length || sideOpen){className += ' rsa-blur'}
       return className;
     }
+    navigation_layout(type) {
+      let {navs = [],navHeader,rtl} = this.props;
+      if(!navs.length){return false}
+      let {navId} = this.state;
+      let props = {navs,navHeader,navId,onChange:(navId)=>this.setState({navId}),type,rtl}
+      return {className:'of-visible',html: (<Navigation {...props}/>)};
+    }
+    page_layout(nav){
+      let {body = ()=>''} = this.props;
+      return {
+        flex:1,
+        column:[
+          this.header_layout(nav),
+          {flex:1,html:<div className='rsa-body'>{body(this.state)}</div>},
+          this.navigation_layout('bottom')
+        ]
+      } 
+    }
+    
     renderMain(){
-      let {touch,navId} = this.state;
+      let {navId} = this.state;
       let {navs,style} = this.props;
       let nav = navs?this.getNavById(navId):false;
       let layout = {style,className: this.getMainClassName()}
-      if(touch){layout.column = [this.page_layout(nav),this.navigation_layout()]}
-      else{layout.row = [this.navigation_layout(),this.page_layout(nav)]}
+      layout.row = [this.navigation_layout('side'),this.page_layout(nav)]
       return (<RVD layout={layout}/>)
     }
     renderPopups(){
-      let {popups,removePopup} = this.state;
+      let {popups,removePopup,confirm} = this.state;
       let {rtl,popupConfig = {}} = this.props;
       if(!popups.length){return null}
       return popups.map((o,i)=>{
-        return <Popup key={i} blur={i === popups.length - 2} {...popupConfig} {...o} index={i} removePopup={()=>removePopup()} rtl={rtl}/>
+        return <Popup key={i} blur={confirm || i === popups.length - 2} {...popupConfig} {...o} index={i} removePopup={()=>removePopup()} rtl={rtl}/>
       })
     }
     render() {
-      let {confirm,popups,removePopup,sideOpen,splash} = this.state;
-      let {sides = [],sideId,rtl,sideHeader,popupConfig = {}} = this.props;
+      let {confirm,sideOpen,splash} = this.state;
+      let {sides = [],sideId,rtl,sideHeader,sideFooter,sideClassName} = this.props;
       return (
-        <>
-          {this.renderMain()},
-          {this.renderPopups()}
-          {confirm && <Confirm {...confirm} onClose={()=>this.setState({confirm:false})}/>}
-          {sides.length && <SideMenu sideHeader={sideHeader} sides={sides} sideId={sideId} sideOpen={sideOpen} rtl={rtl} onClose={()=>this.setState({sideOpen:false})}/>}
-          {splash && splash()}
-        </>
+        <div className='rsa-container'>
+          <div className='rsa'>
+            {this.renderMain()},
+            {this.renderPopups()}
+            {confirm && <Confirm {...confirm} rtl={rtl} onClose={()=>this.setState({confirm:false})}/>}
+            {sides.length && <SideMenu className={sideClassName} sideHeader={sideHeader} sideFooter={sideFooter} sides={sides} sideId={sideId} sideOpen={sideOpen} rtl={rtl} onClose={()=>this.setState({sideOpen:false})}/>}
+            {splash && splash()}
+          </div>
+        </div>
       );
     }
   }
@@ -172,7 +207,7 @@ export default class ReactSuperApp extends Component {
     }
     items_layout(navs,level){
       return {
-        flex:1,scroll:'v',
+        flex:1,className:'ofy-auto',
         column:navs.filter(({show = ()=>true})=>show()).map((o,i)=>{
           if(o.navs){
             let {openDic} = this.state;
@@ -201,7 +236,7 @@ export default class ReactSuperApp extends Component {
         className:'rsa-navigation-item' + (active?' active':''),attrs:{onClick:()=>navs?this.toggle(id):onChange(id)},
         row:[
           {size:level * 16},
-          {size:24,html:navs?<Icon path={open?mdiChevronDown:(rtl?mdiChevronLeft:mdiChevronRight)} size={1}/>:'',align:'vh'},
+          {show:navs!== undefined,size:24,html:navs?<Icon path={open?mdiChevronDown:(rtl?mdiChevronLeft:mdiChevronRight)} size={1}/>:'',align:'vh'},
           {show:!!icon,size:48,html:()=>icon(active),align:'vh'},
           {html:text,align:'v'}
         ]
@@ -211,10 +246,10 @@ export default class ReactSuperApp extends Component {
       let {navId,onChange} = this.props;
       let active = id === navId;
       return {
-          flex:1,className:'rsa-bottom-menu-item' + (active?' active':''),attrs:{onClick:()=>onChange(id)},
+          flex:1,className:'rsa-bottom-menu-item of-visible' + (active?' active':''),attrs:{onClick:()=>onChange(id)},
           column:[
             {flex:2},
-            {show:!!icon,html:()=>icon(active),align:'vh'},
+            {show:!!icon,html:()=>icon(active),align:'vh',className:'of-visible'},
             {flex:1},
             {html:text,align:'vh',className:'rsa-bottom-menu-item-text'},
             {flex:1}
@@ -222,11 +257,11 @@ export default class ReactSuperApp extends Component {
       }
     }
     render() {
-      let {touch,navs} = this.props;
-      if(touch){
-        return (<RVD layout={{className: 'rsa-bottom-menu',row: navs.map((o)=>this.bottomMenu_layout(o))}}/>)
+      let {type,navs} = this.props;
+      if(type === 'bottom'){
+        return (<RVD layout={{className: 'rsa-bottom-menu',hide_sm:true,hide_md:true,hide_lg:true,row: navs.map((o)=>this.bottomMenu_layout(o))}}/>)
       }
-      return (<RVD layout={{className: 'rsa-navigation',column: [this.header_layout(),this.items_layout(navs,0)]}}/>);
+      return (<RVD layout={{hide_xs:true,className: 'rsa-navigation',column: [this.header_layout(),this.items_layout(navs,0)]}}/>);
     }
   }
   class SideMenu extends Component {
@@ -238,12 +273,13 @@ export default class ReactSuperApp extends Component {
     items_layout(){
       let {sides,sideId,onClose} = this.props;
       return {
-        gap:12,
+        flex:1,gap:12,
         column:sides.map((o,i)=>{
-          let {icon = ()=><div style={{width:12}}></div>,text,id,className,onClick = ()=>{}} = o;
+          let {icon = ()=><div style={{width:12}}></div>,text,id,className,onClick = ()=>{},show = ()=>true} = o;
+          let Show = show();
           let active = id === sideId;
           return {
-            size:36,className:'rsa-sidemenu-item' + (active?' active':'') + (className?' ' + className:''),attrs:{onClick:()=>{onClick(o); onClose()}},
+            show:Show !== false,size:36,className:'rsa-sidemenu-item' + (active?' active':'') + (className?' ' + className:''),attrs:{onClick:()=>{onClick(o); onClose()}},
             row:[
               {size:48,html:icon(active),align:'vh'},
               {html:text,align:'v'}
@@ -252,18 +288,22 @@ export default class ReactSuperApp extends Component {
         })
       }
     }
-    
+    footer_layout(){
+      let {sideFooter} = this.props;
+      if(!sideFooter){return false}
+      return {html: sideFooter(),className:'rsa-sidemenu-footer'};
+    }
     componentDidMount(){
       setTimeout(()=>this.setState({open:true}),0)  
     }
     render() {
-      let {onClose,rtl,sideOpen} = this.props;
+      let {onClose,rtl,sideOpen,className} = this.props;
       return (
           <RVD 
             layout={{
-              className: 'rsa-sidemenu-container' + (sideOpen?' open':'') + (rtl?' rtl':' ltr'),
+              className: 'rsa-sidemenu-container' + (sideOpen?' open':'') + (rtl?' rtl':' ltr') + (className?' ' + className:''),
               row:[
-                {className: 'rsa-sidemenu',column: [this.header_layout(),this.items_layout()]},
+                {className: 'rsa-sidemenu',column: [this.header_layout(),this.items_layout(),this.footer_layout()]},
                 {flex:1,attrs:{onClick:()=>onClose()}}
               ]
             }} 
@@ -290,7 +330,7 @@ export default class ReactSuperApp extends Component {
     }
     return res
   }
-//tabs,content,onClose,title
+//tabs,body,onClose,title
 class Popup extends Component{
     constructor(props){
       super(props);
@@ -325,28 +365,29 @@ class Popup extends Component{
         ]
       }
     }
-    body_layout(){return {flex:1,column:[this.tabs_layout(),this.content_layout()]}}
+    body_layout(){return {flex:1,column:[this.tabs_layout(),this.body_layout()]}}
     tabs_layout(){
       let {tabs} = this.props;
       if(!tabs){return false}
       let {activeTabIndex} = this.state;
       return {html:(<AIOButton type='tabs' options={tabs.map((o,i)=>{return {text:o,value:i}})} value={activeTabIndex} onChange={(activeTabIndex)=>this.setState({activeTabIndex})}/>)}
     }
-    content_layout(){
-      let {tabs,content} = this.props;
-      let Content;
+    body_layout(){
+      let {tabs,body} = this.props;
+      let content;
       if(tabs){
         let {activeTabIndex} = this.state;
-        Content = content(activeTabIndex)
+        content = body(activeTabIndex)
       }
-      else {Content = content()}
-      if(Content === 'loading'){return {flex:1,html:'در حال بارگزاری',align:'vh'}}
-      if(Content === 'empty'){return {flex:1,html:'موردی موجود نیست',align:'vh'}}
-      return {flex:1,html:<div className='rsa-popup-body'>{Content}</div>}
+      else {content = body()}
+      if(content === 'loading'){return {flex:1,html:'در حال بارگزاری',align:'vh'}}
+      if(content === 'empty'){return {flex:1,html:'موردی موجود نیست',align:'vh'}}
+      return {flex:1,html:<div className='rsa-popup-body'>{content}</div>}
     }
     getClassName(){
-      let {type,blur} = this.props;
+      let {type,blur,className:cls} = this.props;
       let className = 'rsa-popup-container';
+      if(cls){className += className?(' ' + cls):''}
       if(blur){className += ' rsa-blur'}
       if(type === 'fullscreen'){className += ' fullscreen'}
       if(type === 'bottom'){className += ' bottom-popup'}
@@ -366,7 +407,7 @@ class Popup extends Component{
       $(this.dom.current).animate({height: '100%',width: '100%',left:'0%',top:'0%',opacity:1}, 300);
     }
     render(){
-      let {rtl} = this.props;
+      let {rtl,style} = this.props;
       return (  
         <div ref={this.dom} className={this.getClassName()} onClick={(e)=>this.backClick(e)} style={{
           left:'50%',top:'100%',height:'0%',width:'0%',opacity:0
@@ -374,7 +415,7 @@ class Popup extends Component{
           <RVD 
             layout={{
               className:'rsa-popup' + (rtl?' rtl':' ltr') + (' ' + this.dui),
-              style:{flex:'none'},
+              style:{flex:'none',...style},
               column:[this.header_layout(),this.body_layout()]
             }}
           />  
@@ -402,7 +443,7 @@ class Popup extends Component{
     }
     body_layout(){
       let {text} = this.props;
-      return {flex:1,html:text,scroll:'v',className:'rsa-popup-body'}
+      return {flex:1,html:text,className:'rsa-popup-body ofy-auto'}
     }
     onSubmit(){
       let {onClose,onSubmit} = this.props;
@@ -416,6 +457,7 @@ class Popup extends Component{
         size:48,
         align:'v',
         style:{padding:'0 12px'},
+        className:'rsa-confirm-footer',
         row:buttons.map(({text,onClick = ()=>{}})=>{
           return {html:(
             <button 
@@ -437,10 +479,10 @@ class Popup extends Component{
       onClose();
     }
     render(){
-      let {style = {width:400,height:300}} = this.props;
+      let {style = {width:400,height:300},rtl} = this.props;
       return (  
         <div className='rsa-popup-container' onClick={(e)=>this.backClick(e)}>
-          <RVD layout={{className:'rsa-popup rsa-confirm' + (' ' + this.dui),style:{flex:'none',...style},column:[this.header_layout(),this.body_layout(),this.footer_layout()]}}/>  
+          <RVD layout={{className:'rsa-popup rsa-confirm' + (' ' + this.dui),style:{flex:'none',direction:rtl?'rtl':'ltr',...style},column:[this.header_layout(),this.body_layout(),this.footer_layout()]}}/>  
         </div>
       )
     }

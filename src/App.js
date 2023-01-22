@@ -3,12 +3,12 @@ import RSA from './npm/react-super-app/react-super-app';
 import AIOService from './npm/aio-service/aio-service';
 import apis from './apis';
 import {Icon} from '@mdi/react';
-import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp} from '@mdi/js';
+import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet} from '@mdi/js';
 import Javayez from './pages/javayez/javayez';
 import ShakhesHa from './pages/shakhes-ha/shakhes-ha';
 import Khane from './pages/khane/khane';
 import Tarikhche from './pages/tarikhche/tarikhche';
-import getSvg from './getSvg';
+import Wallet from './pages/wallet/wallet';
 import AppContext from './app-context';
 import gemSrc from './images/gem.gif';
 import './App.css';
@@ -111,7 +111,7 @@ export default class App extends Component{
             {icon:()=><Icon path={mdiPoll} size={1}/>,id:'shakhes_ha'},
             {icon:()=><Icon path={mdiHome} size={1}/>,id:'khane'},
             {icon:()=><Icon path={mdiHistory} size={1}/>,id:'tarikhche'},
-            {icon:()=><Icon path={mdiHelp} size={1}/>,id:'rahnama'},
+            {icon:()=><Icon path={mdiWallet} size={1}/>,id:'wallet'},
           ]}
           header={false}
           body={({navId})=>{
@@ -119,6 +119,7 @@ export default class App extends Component{
             if(navId === 'shakhes_ha'){return <ShakhesHa/>}
             if(navId === 'khane'){return <Khane/>}
             if(navId === 'tarikhche'){return <Tarikhche/>}
+            if(navId === 'wallet'){return <Wallet/>}
           }}
           splash={()=><Splash/>}
           splashTime={6000}

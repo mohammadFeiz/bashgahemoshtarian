@@ -1,6 +1,10 @@
 import React,{Component,Fragment} from "react";
 import $ from 'jquery';
 import "./index.css";
+let RVDCLS = {
+  rvd:'rvd',pointer:'rvd-pointer',gap:'rvd-gap',justify:'rvd-justify',align:'rvd-align',
+  row:'rvd-row',column:'rvd-column',hidexs:'rvd-hide-xs',hidesm:'rvd-hide-sm',hidemd:'rvd-hide-md',hidelg:'rvd-hide-lg'
+}
 export default class ReactVirtualDom extends Component {
   touch = 'ontouchstart' in document.documentElement;
   eventHandler(event, action,type = 'bind'){
@@ -8,47 +12,51 @@ export default class ReactVirtualDom extends Component {
     $(window).unbind(event, action);
     if(type === 'bind'){$(window).bind(event, action)}
   }
-  getClassName(obj,childs,align,scroll,Attrs,attrs,Props,isRoot,parent){
-    let className = childs.length?'r-layout-parent':'r-layout-item';
-    if(parent){
-      if(parent.row){className += ' r-layout-row-child';}
-      else if(parent.column){className += ' r-layout-column-child';}
+  getClassName(obj,align,Attrs,attrs,Props,pointer,isRoot,parent = {}){
+    let className = RVDCLS.rvd;
+    let gapClassName = RVDCLS.gap;
+    if(isRoot){className += ' rvd-root'}
+    if(parent.gapAttrs && parent.gapAttrs.className){
+      gapClassName += ' ' + parent.gapAttrs.className
     }
-    if(isRoot){className += ' r-layout-root'}
-    let gapClassName = 'r-layout-gap';
-    if(obj.gapAttrs && obj.gapAttrs.className){
-      gapClassName += ' ' + obj.gapAttrs.className
-    }
+    if(pointer){ className += ' ' + RVDCLS.pointer;}
     if(Attrs.className){ className += ' ' + Attrs.className}
     if(attrs.className){ className += ' ' + attrs.className}
     if(obj.className){ className += ' ' + obj.className}
-    if(align === 'v'){className += obj.column?' rvd-justify':' rvd-align';}
-    else if(align === 'h'){className += obj.column?' rvd-align':' rvd-justify';}
-    else if(align === 'vh'){className += ' rvd-justify rvd-align';}
-    if(scroll === 'v'){className += ' rvd-y-auto'}
-    else if(scroll === 'h'){className += ' rvd-x-auto'}
-    else if(scroll === 'vh'){className += ' rvd-x-auto rvd-y-auto';}
-    if(obj.row){className += ' rvd-row'}
-    else if(obj.column){className += ' rvd-column'}
-    if(obj.hide_xs || Props.hide_xs){
-      className += ' r-layout-hide-xs';
-      gapClassName += ' r-layout-hide-xs';
+    if(align === 'v'){className += ' ' + (obj.column?RVDCLS.justify:RVDCLS.align);}
+    else if(align === 'h'){className += ' ' + (obj.column?RVDCLS.align:RVDCLS.justify);}
+    else if(align === 'vh'){className += ` ${RVDCLS.justify} ${RVDCLS.align}`;}
+    if(obj.row){className += ' ' + RVDCLS.row}
+    else if(obj.column){className += ' ' + RVDCLS.column}
+    let hide_xs,hide_sm,hide_md,hide_lg;
+    
+    if(obj.show_xs || Props.show_xs){hide_xs = false; hide_sm = true; hide_md = true; hide_lg = true;}
+    if(obj.hide_xs || Props.hide_xs){hide_xs = true;}
+    if(obj.show_sm || Props.show_sm){hide_xs = true; hide_sm = false; hide_md = true; hide_lg = true;}
+    if(obj.hide_sm || Props.hide_sm){hide_sm = true;}
+    if(obj.show_md || Props.show_md){hide_xs = true; hide_sm = true; hide_md = false; hide_lg = true;}
+    if(obj.hide_md || Props.hide_md){hide_md = true;}
+    if(obj.show_lg || Props.show_lg){hide_xs = true; hide_sm = true; hide_md = true; hide_lg = false;}
+    if(obj.hide_lg || Props.hide_lg){hide_lg = true;} 
+    if(hide_xs){
+      className += ' ' + RVDCLS.hidexs;
+      gapClassName += ' ' + RVDCLS.hidexs;
     }
-    if(obj.hide_sm || Props.hide_sm){
-      className += ' r-layout-hide-sm';
-      gapClassName += ' r-layout-hide-sm';
+    if(hide_sm){
+      className += ' ' + RVDCLS.hidesm;
+      gapClassName += ' ' + RVDCLS.hidesm;
     }
-    if(obj.hide_md || Props.hide_md){
-      className += ' r-layout-hide-md';
-      gapClassName += ' r-layout-hide-md';
+    if(hide_md){
+      className += ' ' + RVDCLS.hidemd;
+      gapClassName += ' ' + RVDCLS.hidemd;
     }
-    if(obj.hide_lg || Props.hide_lg){
-      className += ' r-layout-hide-lg';
-      gapClassName += ' r-layout-hide-lg';
+    if(hide_lg){
+      className += ' ' + RVDCLS.hidelg;
+      gapClassName += ' ' + RVDCLS.hidelg;
     }
     return {className,gapClassName};
   }
-  getProps(obj,index,parent,isRoot){
+  getProps(obj,index,parent = {},isRoot){
     let {childsAttrs = ()=>{return {}},childsProps = ()=>{return {}}} = parent;
     let {attrs = {},onResize,swapId} = obj;
     let Attrs = (typeof childsAttrs === 'function'?childsAttrs(obj,index):childsAttrs) || {};
@@ -56,36 +64,30 @@ export default class ReactVirtualDom extends Component {
     let size = obj.size || Props.size;
     let flex = obj.flex || Props.flex;
     let align = obj.align || Props.align;
-    let scroll = obj.scroll || Props.scroll;
-    let cursor = Attrs.onClick || attrs.onClick?'pointer':undefined;
+    let onClick = obj.onClick || Props.onClick;
+    let pointer = !!Attrs.onClick || !!attrs.onClick || !!onClick;
     let childs = [];
     let html = typeof obj.html === 'function'?obj.html():obj.html;
     let dataId = 'a' + Math.random();
-    let style = {cursor,...Attrs.style,...attrs.style,...obj.style}
+    let style = {...Attrs.style,...attrs.style,...obj.style}
     let axis;
     let gapStyle = {}
     if(parent.row){
-      if(size !== undefined){style.width = size}
+      if(size !== undefined){style.width = size; flex = undefined}
       gapStyle.width = parent.gap;
       if(size && onResize){gapStyle.cursor = 'col-resize';}
       axis = 'x';
     }
     else if(parent.column){
-      if(size !== undefined){style.height = size}
+      if(size !== undefined){style.height = size; flex = undefined}
       gapStyle.height = parent.gap;
       if(size && onResize){gapStyle.cursor = 'row-resize';}
       axis = 'y';
     }
-    if(obj.row){
-      childs = typeof obj.row === 'function'?obj.row():obj.row;
-    }
-    else if(obj.column){
-      childs = typeof obj.column === 'function'?obj.column():obj.column
-    }
-    if(obj.gapAttrs && obj.gapAttrs.style){
-      gapStyle = {...gapStyle,...obj.gapAttrs.style}
-    }
-    let {className,gapClassName} = this.getClassName(obj,childs,align,scroll,Attrs,attrs,Props,isRoot,parent);
+    if(obj.row){childs = typeof obj.row === 'function'?obj.row():obj.row;}
+    else if(obj.column){childs = typeof obj.column === 'function'?obj.column():obj.column}
+    if(parent.gapAttrs && parent.gapAttrs.style){gapStyle = {...gapStyle,...obj.gapAttrs.style}}
+    let {className,gapClassName} = this.getClassName(obj,align,Attrs,attrs,Props,pointer,isRoot,parent);
     let gapAttrs = {className:gapClassName,style:gapStyle,draggable:false,onDragStart:(e)=>{e.preventDefault(); return false}};
     if(size && onResize){
       gapAttrs[this.touch?'onTouchStart':'onMouseDown'] = (e)=>{
@@ -103,9 +105,7 @@ export default class ReactVirtualDom extends Component {
         }
         this.swapId = swapId;
       }
-      attrs.onDragOver = (e)=>{
-        e.preventDefault();
-      }
+      attrs.onDragOver = (e)=>e.preventDefault();
       attrs.onDrop = ()=>{
         let {onSwap = ()=>{}} = this.props;
         if(this.swapId === swapId){return;}
@@ -113,35 +113,28 @@ export default class ReactVirtualDom extends Component {
         this.swapId = false
       }
     } 
-    return {
-      size,flex,childs,style,html,dataId,
-      attrs:{...Attrs,...attrs,className,'data-id':dataId},
-      gapAttrs
+    attrs = {onClick,...Attrs,...attrs,style:{flex,...style},className,'data-id':dataId};
+    if(this.props.loading && html){
+      html = (
+        <>
+          <div style={{opacity:0}}>{html}</div>
+          <div className='rvd-loading'></div>  
+        </>
+      )
+      attrs.onClick = undefined
     }
+    return {childs,html,attrs,gapAttrs}
   }
   getClient(e){return this.touch?{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}:{x:e.clientX,y:e.clientY}}
-  getHtml(obj,index,parentObj,isRoot){
-    if(!obj || obj === null){return ''}
-    let {show = true} = obj;
-    let Show = typeof show === 'function'?show():show;
-    let parent = parentObj || {};
-    if(!Show){return null}
-    let {size,flex,childs,style,html,attrs,gapAttrs} = this.getProps(obj,index,parent,isRoot)
-    if(parentObj){flex = flex || 'none'}
-    var result;
-    if(!childs.length){result = <div {...attrs} style={{...style,flex}}>{html}</div>}
-    else{
-      let Style = {flex:!size?(flex || 1):undefined,...style};
-      result = (
-        <div {...attrs} style={Style}>
-          {childs.map((o,i)=><Fragment key={i}>{this.getHtml(o,i,obj)}</Fragment>)}
-        </div>
-      )
-    }
+  getLayout(obj,index,parent,isRoot){
+    if(!obj || obj === null || (typeof obj.show === 'function'?obj.show():obj.show) === false){return ''}
+    let {childs,html,attrs,gapAttrs} = this.getProps(obj,index,parent,isRoot)
     return (
       <Fragment key={index}>
-        {result}
-        {parent.gap !== undefined && <div {...gapAttrs}></div>}
+        <div {...attrs}>
+          {childs.length?childs.map((o,i)=><Fragment key={i}>{this.getLayout(o,i,obj,false)}</Fragment>):html}
+        </div>
+        {parent && parent.gap !== undefined && <div {...gapAttrs}></div>}
       </Fragment>
     ) 
   }
@@ -163,7 +156,7 @@ export default class ReactVirtualDom extends Component {
   }
   render(){
     var {gap,layout} = this.props;
-    return this.getHtml(layout,0,undefined,true);
+    return this.getLayout(layout,0,undefined,true);
   }
 }
 ReactVirtualDom.defaultProps = {gap:0,layout:{}};

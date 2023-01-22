@@ -1,11 +1,15 @@
 body{
   direction:rtl;
 }
+button,input{
+  font-family:inherit;
+}
 .rsa-bottom-menu{
   height:88px;
   align-items: center;
   padding:0 16px;
   background:rgba(0,0,0,0.1);
+  overflow:visible;
 }
 .rsa-bottom-menu-item{
   height:54px;
@@ -16,6 +20,7 @@ body{
 .rsa-bottom-menu-item.active{
   background:#fff;
   color:#fff;
+  overflow:visible !important;
 }
 .rsa-bottom-menu-item.active svg{
   background:#2BA4D8;
@@ -75,6 +80,10 @@ body{
 .color107C10{
   color:#107C10;
 }
+.color8B1DCF{
+  color:#8B1DCF;
+
+}
 .color10BABE{
   color:#10BABE;
 }
@@ -86,6 +95,9 @@ body{
 }
 .bgC7E6F4{
   background:#C7E6F4;
+}
+.bgE0F6FF{
+  background:#E0F6FF;
 }
 .margin-0-12{
   margin:0 12px;

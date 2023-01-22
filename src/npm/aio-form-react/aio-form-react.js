@@ -163,10 +163,10 @@ export default class AIOForm extends Component {
       optionBefore:input.optionBefore,optionAfter:input.optionAfter,optionStyle:input.optionStyle,
       text,before:input.before,optionSubtext:input.optionSubtext
     }
-    let {defaults = {}} = this.props;
+    let {defaults = {},rtl} = this.props;
     let select = defaults.select || {};
     this.setByDefaults(select,props);
-    return (<AIOButton {...props} type='select' popupWidth='fit' popupAttrs={{style:{maxHeight: 400 }}}/>);
+    return (<AIOButton {...props} type='select' popupWidth='fit' popupAttrs={{style:{maxHeight: 400 }}} rtl={rtl}/>);
   }
   getInput_multiselect({className,value,onChange,options,disabled,style,text,subtext,theme}, input) {
     let props = {className,value,onChange,options,text,subtext,disabled,search:input.search,style,popupWidth:'fit',
@@ -242,14 +242,16 @@ export default class AIOForm extends Component {
     return {...stateTheme,...inputTheme,label:{...stateTheme.label,...inputTheme.label},input:{...stateTheme.input,...inputTheme.input}} 
   }
   getLabelLayout(label,input,inlineLabel){
-    let {inputs} = this.props;
+    let {inputs,classNames = {}} = this.props;
     let labelStyle = this.getTheme(input,'labelStyle');
     labelStyle = this.getValue({field:labelStyle,def:{},input})
     if(typeof labelStyle === 'string'){
       try{labelStyle = JSON.parse(labelStyle)}
       catch{labelStyle = {}}
     }
-    let props = {align:'v',show: label !== undefined,style:{...labelStyle,width:'fit-content',height:'fit-content'},className:'aio-form-label'}
+    let className = 'aio-form-label';
+    if(classNames.label){className += classNames.label}
+    let props = {align:'v',show: label !== undefined,style:{...labelStyle,width:'fit-content',height:'fit-content'},className}
     props.size = inlineLabel?labelStyle.width:(labelStyle.height || 24);
     let {onChangeInputs} = this.props;
     if(onChangeInputs){
@@ -263,6 +265,19 @@ export default class AIOForm extends Component {
     }
     else{props.html = label;}
     return props;
+  }
+  getInputClassName(input,disabled,prefix,affix){
+    let {rtl,classNames = {}} = this.props;
+    let cls = 'aio-form-input';
+    cls += ` aio-form-input-${input.type}`;
+    if(disabled === true){cls += ' disabled';}
+    if(input.className){cls += ` ${input.className}`;}
+    if(classNames.input){cls += ` ${classNames.input}`;}
+    if(affix){cls += ' has-affix'}
+    if(prefix){cls += ' has-prefix'}
+    if(input.className){cls += ` ${input.className}`;}
+    cls += rtl?' rtl':' ltr';
+    return cls
   }
   getInput(input){
     let {rtl,showErrors} = this.props;
@@ -282,24 +297,25 @@ export default class AIOForm extends Component {
     let placeholder = this.getValue({field:input.placeholder,def:false});
     let onChange = (value) => this.onChange(input, value);
     let style = this.getTheme(input,'inputStyle')
-    let className = `aio-form-input aio-form-input-${input.type}` + (disabled === true?' disabled':'') + (input.className ? ' ' + input.className : '') + (affix?' has-affix':'') + (prefix?' has-prefix':'') + (rtl?' rtl':' ltr')
+    let className = this.getInputClassName(input,disabled,prefix,affix);
     let error = this.getError(input,value,options)
     let props = {value,options,step,disabled:disabled === true,onChange,className,style,placeholder,text,subtext,start,end,theme,columns,min,max}
     let {error:themeError = {}} = theme;
     let inlineLabel = this.getTheme(input,'inlineLabel','boolean');
     if (inlineLabel) {
       return {
-        className: 'aio-form-item',style:{overflow:'visible'},
+        className: 'aio-form-item of-visible' + (error?' has-error':''),
         row: [
           this.getLabelLayout(label,input,inlineLabel),
           {size:6,show: label !== undefined},
           {
-            flex:1,style:{overflow:'visible'},
+            flex:1,
+            className:'of-visible',
             column:[
               {
                 row:[
                   {show:!!input.prefix,html:()=>this.getFix(input,rtl,'prefix')},
-                  { flex:1,style:{overflow:'visible'},html: ()=>this['getInput_' + input.type](props,input) },
+                  { flex:1,className:'of-visible',html: ()=>this['getInput_' + input.type](props,input) },
                   {show:!!input.affix,html:()=>this.getFix(input,rtl,'affix')}
                 ]
               },
@@ -311,14 +327,13 @@ export default class AIOForm extends Component {
       };
     } else {
       return {
-        className: 'aio-form-item',
-        style:{overflow:'visible'},
+        className: 'aio-form-item of-visible' + (error?' has-error':''),
         column: [
           this.getLabelLayout(label,input,inlineLabel),
           {
             row:[
               {show:!!input.prefix,html:()=>this.getFix(input,rtl,'prefix')},
-              { style:{overflow:'visible'},flex:1,html: ()=>this['getInput_' + input.type](props,input) },
+              {className:'of-visible',flex:1,html: ()=>this['getInput_' + input.type](props,input) },
               {show:!!input.affix,html:()=>this.getFix(input,rtl,'affix')}
             ]
           },
@@ -378,15 +393,16 @@ export default class AIOForm extends Component {
   }
   getInputs(inputs){
     if(!inputs.length){return []}
-    let {onSwap,rowStyle} = this.props; 
+    let {onSwap,theme = {}} = this.props; 
+    let {rowStyle = {}} = theme;
     let rows = this.sortByRows(this.handleGroups(inputs));
     return rows.map((row,i)=>{
-      let style = {...rowStyle,overflow:'visible'};
+      let style = {...rowStyle};
       if(i === rows.length - 1){style.marginBottom = 0}
       return {
         swapId:onSwap?row._index.toString():undefined,
         style,
-        className:'aio-form-row',
+        className:'aio-form-row of-visible',
         swapHandleClassName:'aio-form-label',
         row:row.map((o)=>{
           return {...this.getInput(o),flex:o.rowWidth?undefined:1,size:o.rowWidth,align:'v'}
@@ -450,7 +466,7 @@ export default class AIOForm extends Component {
   body_layout(show = true){
     if(!show){return false}
     let {inputs = [],theme = {}} = this.props;
-    return {className: 'aio-form-body',style:theme.bodyStyle,scroll: 'v',flex: 1,column:()=>this.getInputs(inputs)}
+    return {className: 'aio-form-body ofy-auto',style:theme.bodyStyle,flex: 1,column:()=>this.getInputs(inputs)}
   }
   body_and_tabs_layout(){
     let {tabs = [],tabSize = 36,bodyStyle} = this.props;
@@ -636,26 +652,18 @@ class Input extends Component{
     let {options,type} = this.props;
     let {error,prevValue,value} = this.state;   
     if (this.props.value !== prevValue) {setTimeout(() => {
-        if(value === undefined){
-            this.state.value = undefined;
-            this.state.prevValue = undefined;
-            this.setState({value:undefined,prevValue:undefined})
-        }
-        else{
-            this.setState({value:this.props.value,prevValue:this.props.value})
-        }
-        
+      this.setState({value:this.props.value,prevValue:this.props.value});
     }, 0);}
     if(error !== false){
       return <div className='aio-form-inline-error aio-form-input' onClick={()=>this.setState({error:false})}>{error}</div>
     }
-    let props = { ...this.props, value, onChange: (e) => this.onChange(e.target.value) ,ref:this.dom};
+    let props = { ...this.props, onChange: (e) => this.onChange(e.target.value) ,ref:this.dom};
     let uid = 'a' + Math.random();
     return type === 'textarea' ? (
-      <textarea {...props} />
+      <textarea {...props} value={value === undefined?'':value}/>
     ) : (
       <>
-        <input {...props} list={uid}/>
+        <input {...props} value={value === undefined?'':value} list={uid}/>
         {Array.isArray(options) && options.length !== 0 && this.getOptions(uid)}
       </>
     );

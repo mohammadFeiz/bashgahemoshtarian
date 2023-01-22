@@ -117,9 +117,14 @@ export default class Table extends Component {
         let {_show} = this.getRowDetailById(id);
         if(_show === false){return null}
         if(!this.isRowOpen(id)){return null}
-        let {width,flex,minWidth = 36,dataColumnId} = column;
+        let {width,flex,minWidth = 3,dataColumnId} = column;
+        let {hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg} = column;
         if(width === undefined && flex === undefined){flex = 1;}
-        return {html:<Cell striped={striped} key={id + dataColumnId + column.freeze} colId={j} rowId={id} column={column} value={value}/>,size:width,flex,minWidth,attrs:{'data-column-id':dataColumnId}}
+        return {
+          html:<Cell striped={striped} key={id + dataColumnId + column.freeze} colId={j} rowId={id} column={column} value={value}/>,
+          size:width,flex,minWidth,attrs:{'data-column-id':dataColumnId},
+          hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg
+        }
       };
       if(column.freeze){this.freezeMode = true; freezeCells.push(cell)}
       else{unfreezeCells.push(cell)}  
@@ -290,8 +295,7 @@ export default class Table extends Component {
       return pathes
     }
     return {
-      size:detail._level * indent,
-      style:{height:'100%',overflow:'visible'},
+      size:detail._level * indent,style:{height:'100%'},className:'of-visible',
       html:(
         <div style={{width:detail._level * indent,height:'100%',position:'relative'}}>
           <svg width={20} height={20} style={{height:`calc(100% + ${rowGap}px)`,width:'100%',position:'absolute',top:-rowGap}}>
@@ -349,7 +353,6 @@ export default class Table extends Component {
       e.preventDefault();
       let sign = ((e.keyCode === 37?-1:1) * (rtl?-1:1)) === 1?'next':'prev';
       let next = focusedInput[sign](`[data-row-id='${rowId}']`);
-      console.log(next.length)
       if(next.length){next.focus().select();}
     }
   }
@@ -452,8 +455,7 @@ export default class Table extends Component {
     let {prevColumns} = this.state;
     let columnsStr = JSON.stringify(columns);
     if(columnsStr !== prevColumns){
-      let newColumns = JSON.parse(columnsStr);
-      setTimeout(()=>this.setState({columns:newColumns,prevColumns:columnsStr},()=>this.updateColumnsByStorageKey()),0)
+      setTimeout(()=>this.setState({columns,prevColumns:columnsStr},()=>this.updateColumnsByStorageKey()),0)
     }
     this.setColumnIds()
     //پیجینگ را زود تر می سازیم که دیفالت هاش محاسبه بشه
@@ -496,10 +498,12 @@ class TableUnit extends Component{
     if(column.show === false){return false}
     let resizable = column.resizable !== false && column.width && !column.flex;
     let {rowHeight,headerHeight} = this.context;
-    let {width,flex,minWidth = 36,titleAttrs = {}} = column;
+    let {width,flex,minWidth = 3,titleAttrs = {}} = column;
+    let {hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg} = column;
     if(setFlex){width = undefined; flex = 1}
     if(width === undefined && flex === undefined){flex = 1;}
     return {
+      hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg,
       size:width,align:'vh',flex,style:{minWidth,height:headerHeight || rowHeight,...titleAttrs.style},
       attrs:{
         ...titleAttrs,'data-column-id':column.dataColumnId,className:undefined,style:undefined,
@@ -589,7 +593,7 @@ class TableUnit extends Component{
     let {groupHeight,rowHeight,indent,rtl,editGroupName = (o)=>o} = this.context;
     let {cellsType} = this.props;
     return {
-      style:{position:'sticky',[rtl?'right':'left']:0,height:groupHeight || rowHeight},
+      style:{[rtl?'right':'left']:0,height:groupHeight || rowHeight},
       className:TableCLS.groupRow,
       row:cellsType === 'unfreezeCells'?[{flex:1}]:[
         {size:12},
@@ -627,11 +631,11 @@ class TableUnit extends Component{
       let row = getRowById(rowId);
       if(rowChilds){
         return {
-          style:{overflow:'visible'},size:rowHeight,
+          className:'of-visible',size:rowHeight,
           row:[
             indent_layout(rowId),
             toggle_layout(rowId,false),
-            {flex:1,html:rowTemplate(row,rowDetail),className:TableCLS.rowTemplate,style:{overflow:'visible'}},
+            {flex:1,html:rowTemplate(row,rowDetail),className:TableCLS.rowTemplate + ' of-visible'},
             {size:6}
           ]
         }
@@ -644,29 +648,32 @@ class TableUnit extends Component{
     let cells = rowDetail['_' + cellsType];
     let isThereAnyFlex = false;
     return {
-      className:TableCLS.row + (rowDetail._show === 'relative'?' row-relative-filter':''),
+      className:TableCLS.row + ' of-visible' + (rowDetail._show === 'relative'?' row-relative-filter':''),
       gap:columnGap,
-      style:{overflow:'visible'},
       row:cells.map((cell,i)=>{
         let res = cell(striped);
-        let {html,size,flex,minWidth = 36,attrs} = res;
+        let {html,size,flex,minWidth = 3,attrs,hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg} = res;
         if(size === undefined && flex === undefined){flex = 1;}
         if(flex !== undefined){isThereAnyFlex = true}
         if(i === cells.length - 1 && !isThereAnyFlex){
           size = undefined; flex = 1
         }
-        return {style:{height:'100%',minWidth,overflow:'visible'},html,size,flex,attrs}
+        return {
+          style:{height:'100%',minWidth},
+          html,size,flex,attrs,className:'of-visible',
+          hide_xs,hide_sm,hide_md,hide_lg,show_xs,show_sm,show_md,show_lg
+        }
       })
     }
   }
   onSwap(f,t){
-    debugger;
   }
   render(){
     let {rowGap} = this.context,{cellsType,onScroll} = this.props;
     let headerLayout = this.header_layout();
     let rowsLayout = this.rows_layout()
     let className = TableCLS.rows;
+    className += ' of-auto';
     if(cellsType === 'freezeCells'){className += ' ' + TableCLS.freezeContainer}
     else if(cellsType === 'unfreezeCells'){className += ' ' + TableCLS.unfreezeContainer}
     return (
@@ -675,7 +682,7 @@ class TableUnit extends Component{
         layout={{
           className,
           column:[headerLayout,...rowsLayout],
-          scroll:'vh',gap:rowGap,flex:1,
+          gap:rowGap,flex:1,
           attrs:{onScroll:()=>onScroll(),ref:this.rowsRef}
         }}
       />
@@ -687,7 +694,7 @@ class TableUnit extends Component{
     if(rowTemplate || showHeader === false){return false}
     let isThereAnyFlex = false;
     return {
-      gap:columnGap,className:TableCLS.header,
+      gap:columnGap,className:TableCLS.header,hide_xs:showHeader === 'hide_xs',
       row:columns.map((column,i)=>{
         let {width,flex} = column;
         if(width === undefined && flex === undefined){flex = 1;}
@@ -899,7 +906,7 @@ class Cell extends Component{
   }
   async onChange(value){
     let {column,rowId} = this.props;
-    let {rows_object,setModel} = this.context;
+    let {rows_object,setModel = ()=>{}} = this.context;
     let row = rows_object[rowId];
     this.setState({loading:true})
     if(this.inlineEdit.type === 'number' && !isNaN(+value)){value = +value}
@@ -928,7 +935,7 @@ class Cell extends Component{
     let {getRowById,rowHeight} = this.context;
     let {column,rowId,value,striped} = this.props;
     let row = getRowById(rowId);
-    let attrs = {},style = {overflow:'visible'};
+    let attrs = {},style = {};
     if(column.cellAttrs){
       attrs = column.cellAttrs(row) || {}
       if(attrs.style){style = attrs.style}
@@ -943,24 +950,24 @@ class Cell extends Component{
       style.background = striped[0];
       style.color = striped[1];
     }
-    style = {justifyContent:column.justify?'center':undefined,...style}
+    style = {justifyContent:column.justify?'center':undefined,padding:column.justify?undefined:'0 12px',...style}
     this.inlineEdit = this.getInlineEdit(row,column);
     return (
       <RVD
         layout={{
-            className:TableCLS.cell + (attrs.className?' ' + attrs.className:'') + (striped === true?' striped':''),
-            attrs:{
-              ...attrs,'data-uniq-id':this.dataUniqId,style:undefined,className:undefined,
-              onClick:attrs.onClick?()=>attrs.onClick(row):undefined,
-            },
-            style,
-            row:[
-              this.indent_layout(column.treeMode,rowId),
-              this.toggle_layout(),
-              this.before_layout(row,column),
-              this.content_layout(row,column,value),
-              this.after_layout(row,column) 
-            ]
+          className:TableCLS.cell + ' of-visible' + (attrs.className?' ' + attrs.className:'') + (striped === true?' striped':''),
+          attrs:{
+            ...attrs,'data-uniq-id':this.dataUniqId,style:undefined,className:undefined,
+            onClick:attrs.onClick?()=>attrs.onClick(row):undefined,
+          },
+          style,
+          row:[
+            this.indent_layout(column.treeMode,rowId),
+            this.toggle_layout(),
+            this.before_layout(row,column),
+            this.content_layout(row,column,value),
+            this.after_layout(row,column) 
+          ]
         }}
       />  
     )
@@ -988,7 +995,7 @@ class Cell extends Component{
       return {
         className:TableCLS.cellContent,style:{height:'100%'},align:'v',flex:1,
         column:[
-          {html:this.getContent(row,column,value),align:column.justify?'vh':'v',style:{overflow:'visible'}},
+          {html:this.getContent(row,column,value),align:column.justify?'vh':'v',className:'of-visible'},
           {size:3},
           {html:subtext,className:TableCLS.cellSubtext,align:column.justify?'vh':'v'},
         ]
@@ -1128,15 +1135,16 @@ class AIOfilterItem extends Component{
     this.state = {value,prevValue:value}
   }
   operator_layout(){
-    let {onChange,operator,operatorOptions,add,title} = this.props;
+    let {onChange,operator,operatorOptions,add,translate} = this.props;
     if(add === false){return false}
-    if(operatorOptions.filter(({show})=>show !== false).length === 1){
+    let operators = operatorOptions.filter(({show})=>show !== false);
+    if(operators.length === 1){
       return {
         size:90,
         html:(
           <AIOButton 
             style={{width:'100%'}}
-            type='button' className={TableCLS.filterOperator} text={operator}
+            type='button' className={TableCLS.filterOperator} text={operators[0].text}
           />
         )
       }  
@@ -1439,6 +1447,7 @@ let functions = {
     this['scroll' + index] = false;
   },
   getValueByField(row,column,field){
+    
     try{
       if(field === undefined){field = column.field}
       let type = typeof field;
@@ -1521,7 +1530,7 @@ let functions = {
     var {client,width,column,type} = this.resizeDetails;
     var offset = (Client[0] - client[0]) * (type === 'start'?-1:1);
     let newWidth = (width + offset * (rtl?-1:1));
-    if(newWidth < parseInt(column.minWidth || 36)){newWidth = parseInt(column.minWidth || 36)}
+    if(newWidth < parseInt(column.minWidth || 3)){newWidth = parseInt(column.minWidth || 3)}
     this.resizeDetails.newWidth = newWidth;
     if(newWidth % 10 !== 0){return}
     $(`[data-column-id='${column.dataColumnId}']`).css({width:newWidth})
