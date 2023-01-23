@@ -3,6 +3,7 @@ body{
 }
 button,input{
   font-family:inherit;
+  outline:0;
 }
 .rsa-bottom-menu{
   height:88px;

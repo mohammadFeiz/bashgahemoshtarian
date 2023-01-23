@@ -388,6 +388,7 @@ class TabdileAlmas extends Component {
         super(props);
         this.state = {
             nerkhe_tabdile_har_almas:2000,
+            saghfe_roozane:1000,
             type:'2',
             gemsForChange:0,
         }
@@ -450,7 +451,14 @@ class TabdileAlmas extends Component {
     }
     tabdil_layout(){
         let {gems} = this.context;
-        let {type,gemsForChange,nerkhe_tabdile_har_almas} = this.state;
+        let {type,gemsForChange,nerkhe_tabdile_har_almas,saghfe_roozane} = this.state;
+        let submitText = 'درخواست تبدیل';
+        let disabled = false;
+        if(gemsForChange > saghfe_roozane){
+            disabled = true;
+            submitText = 'بالاتر از سقف مجاز'
+        }
+        if(!gemsForChange || isNaN(+gemsForChange)){disabled = true;}
         return {
             className:'p-h-16 size12 bold',
             column:[
@@ -491,7 +499,10 @@ class TabdileAlmas extends Component {
                                     html:(
                                         <input 
                                             type='number' value={gemsForChange} disabled={type === '1'}
-                                            onChange={(e)=>this.setState({gemsFormChange:e.target.value})}
+                                            onChange={(e)=>{
+                                                let value = e.target.value;
+                                                this.setState({gemsForChange:value})
+                                            }}
                                             className='h-36 w-168 br-8'
                                             style={{border:'1px solid #ddd',textAlign:'center',boxSizing:'border-box'}}
                                         />
@@ -535,7 +546,7 @@ class TabdileAlmas extends Component {
                 {
                     align:'vh',
                     html:(
-                        <button style={{maxWidth:240,background:'#00ADF6',color:'#fff',border:'none'}} className='w-100 h-36 br-8'>درخواست تبدیل</button>
+                        <button disabled={disabled} style={{maxWidth:240,background:'#00ADF6',color:'#fff',border:'none'}} className='w-100 h-36 br-8'>{submitText}</button>
                     )
                 }
             ]
