@@ -39,6 +39,11 @@ button,input{
 .rsa-bottom-menu-item:last-child{
   border-radius:36px 0 0 36px;
 }
+.gloss-popup{
+  background:#005478bb;
+  color:#fff;
+  height:100%;
+}
 .page{
   background: radial-gradient(61.69% 61.69% at 50% 38.31%, #95DFFE 0%, #26A4DA 100%);
 }

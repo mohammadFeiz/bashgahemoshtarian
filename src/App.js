@@ -35,7 +35,10 @@ export default class App extends Component{
       catchedAwards:[],
       user:{
         name:'کوروش شجاعی'
-      }
+      },
+      nerkhe_tabdile_har_almas: 2000,
+      pishnahade_tabdile_almas: 5000,
+      selected_credit_card:'1'
     }
   }
   async getGems(){
@@ -123,6 +126,15 @@ export default class App extends Component{
           }}
           splash={()=><Splash/>}
           splashTime={6000}
+          getActions={({addPopup})=>{
+              let actions =  {
+                addPopup
+              }
+              this.state.rsa_actions = actions;
+              this.setState({
+                rsa_actions:actions
+              })
+          }}
         />
       </AppContext.Provider>
     )

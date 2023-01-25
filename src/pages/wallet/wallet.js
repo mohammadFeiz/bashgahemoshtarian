@@ -3,9 +3,10 @@ import RVD from "../../npm/react-virtual-dom/react-virtual-dom";
 import Header from "../../components/header/header";
 import AIOButton from './../../npm/aio-button/aio-button';
 import Titr from "../../components/header/titr/titr";
-import {splitNumber} from './../../npm/react-super-app/react-super-app';
+import CreditCard from './../../components/credit-card/credit-card';
+import { splitNumber } from './../../npm/react-super-app/react-super-app';
 import { Icon } from "@mdi/react";
-import { mdiDiamond, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiCheckbook, mdiCheckboxBlank, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiCloseCircleOutline, mdiDiamond, mdiPlusBoxOutline } from '@mdi/js';
 import AppContext from "../../app-context";
 import './wallet.css';
 export default class Wallet extends Component {
@@ -13,39 +14,53 @@ export default class Wallet extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: 'tabdile_almas',
-            mojoodi_almas: 22560,
-            nerkhe_tabdile_har_almas: 2000,
-            pishnahade_tabdil: 5000
+            page: 'hesab_haye_man',
+            
         }
     }
     async componentDidMount() {
 
     }
     mojoodi_layout() {
-        let { mojoodi_almas } = this.state;
+        let { gems , nerkhe_tabdile_har_almas } = this.context;
         return {
             className: 'wallet-mojoodi-bg of-visible',
-            size: 60,
+            size: 76,
             row: [
                 { size: 12 },
-                { html: 'موجودی الماس من :', align: 'v', className: 'size14 bold color005478' },
-                { size: 6 },
-                { html: mojoodi_almas, align: 'v', className: 'size24 bold color005478' },
-                { size: 6 },
+                {
+                    size:160,
+                    column:[
+                        {
+                            row:[
+                                {flex:1},
+                                { html: gems, align: 'v', className: 'size24 bold color005478' },
+                                { size: 6 },
+                                { html: 'الماس', align: 'v', className: 'size14 bold color005478' }
+                            ]
+                        },
+                        {
+                            row:[
+                                {flex:1},
+                                { html:splitNumber( gems * nerkhe_tabdile_har_almas ), align: 'v', className: 'size24 bold color005478' },
+                                { size: 6 },
+                                { html: 'تومان', align: 'v', className: 'size14 bold color005478' },
+                            ]
+                        }
+                    ]
+                },
+                { size: 24 },
                 { html: <Icon path={mdiPlusBoxOutline} size={1} />, align: 'vh', className: 'color005478' },
                 { flex: 1 },
-                {
-                    align: 'vh', html: getSvg('svg1'), className: 'of-visible'
-                }
+                {align: 'vh', html: getSvg('svg1'), className: 'of-visible'}
 
             ]
         }
     }
     nerkh_layout() {
-        let { nerkhe_tabdile_har_almas } = this.state;
+        let { nerkhe_tabdile_har_almas } = this.context;
         return {
-            className: 'size14', size: 36, align: 'v',
+            className: 'size14', size: 24, align: 'v',
             row: [
                 { size: 36 },
                 { html: 'نرخ تبدیل هر الماس :' },
@@ -56,14 +71,14 @@ export default class Wallet extends Component {
         }
     }
     pishnahad_layout() {
-        let { pishnahade_tabdil } = this.state;
+        let { pishnahade_tabdile_almas } = this.context;
         return {
-            className: 'size14', size: 36, align: 'v',
+            className: 'size14', size: 24, align: 'v',
             row: [
                 { size: 36 },
                 { html: 'پیشنهاد تبدیل :' },
                 { flex: 1 },
-                { html: `${pishnahade_tabdil} الماس` },
+                { html: `${pishnahade_tabdile_almas} الماس` },
                 { size: 6 },
                 { html: 'جزییات', className: 'color10BABE' },
                 { size: 36 }
@@ -75,18 +90,18 @@ export default class Wallet extends Component {
             row: [
                 { flex: 1 },
                 {
-                    gap: 16,
-                    row: row.map(({ text, icon,id }) => {
+                    gap: 12,
+                    row: row.map(({ text, icon, id }) => {
                         return {
                             align: 'vh',
                             style: { border: '2px solid #413FB5', borderRadius: 12, width: 144 },
-                            onClick:()=>this.setState({page:id}),
+                            onClick: () => this.setState({ page: id }),
                             column: [
-                                { size: 12 },
+                                { size: 6 },
                                 { size: 72, html: getSvg(icon), align: 'vh' },
-                                { size: 12 },
+                                { size: 6 },
                                 { size: 24, html: text, className: 'size14 bold' },
-                                { size: 16 }
+                                { size: 6 }
                             ]
                         }
                     })
@@ -98,9 +113,10 @@ export default class Wallet extends Component {
     }
     render() {
         let { page } = this.state;
-        if (page === 'forooshgahe_almas') { return <ForooshgaheAlmas onClose={()=>this.setState({page:false})}/> }
-        if (page === 'tarakoneshe_almas') { return <TarakonesheAlmas onClose={()=>this.setState({page:false})}/> }
-        if (page === 'tabdile_almas') { return <TabdileAlmas onClose={()=>this.setState({page:false})}/> }
+        if (page === 'forooshgahe_almas') { return <ForooshgaheAlmas onClose={() => this.setState({ page: false })} /> }
+        if (page === 'tarakoneshe_almas') { return <TarakonesheAlmas onClose={() => this.setState({ page: false })} /> }
+        if (page === 'tabdile_almas') { return <TabdileAlmas onClose={() => this.setState({ page: false })} /> }
+        if (page === 'hesab_haye_man') { return <HesabHayeMan onClose={() => this.setState({ page: false })} /> }
         return (
             <RVD
                 layout={{
@@ -110,22 +126,26 @@ export default class Wallet extends Component {
                         { html: <Titr text='کیف پول' /> },
                         {
                             style: { background: '#fff' },
-                            flex: 1, scroll: 'v',
+                            flex: 1, className: 'ofy-auto',
                             column: [
-                                { size: 48 },
                                 this.mojoodi_layout(),
-                                { size: 60 },
+                                { size: 16 },
                                 this.nerkh_layout(),
                                 this.pishnahad_layout(),
                                 { size: 12 },
                                 this.cardRow_layout([
-                                    { text: 'فروشگاه الماس', icon: 'svg2',id:'forooshgahe_almas' }, 
-                                    { text: 'تراکنش الماس', icon: 'svg3',id:'tarakoneshe_almas' }
+                                    { text: 'فروشگاه الماس', icon: 'forooshgahe_almas', id: 'forooshgahe_almas' },
+                                    { text: 'تراکنش الماس', icon: 'tarakoneshe_almas', id: 'tarakoneshe_almas' }
                                 ]),
-                                { size: 16 },
+                                { size: 12 },
                                 this.cardRow_layout([
-                                    { text: 'تبدیل الماس', icon: 'svg4',id:'tabdile_almas' }, 
-                                    { text: 'حساب های من', icon: 'svg5',id:'hesab_haye_man' }
+                                    { text: 'تبدیل الماس', icon: 'tabdile_almas', id: 'tabdile_almas' },
+                                    { text: 'حساب های من', icon: 'hesab_haye_man', id: 'hesab_haye_man' }
+                                ]),
+                                { size: 12 },
+                                this.cardRow_layout([
+                                    { text: 'افزایش اعتبار', icon: 'afzayeshe_etebar', id: 'afzayeshe_etebar' },
+                                    { text: 'تسویه اعتبار', icon: 'tasvie_etebar', id: 'tasvie_etebar' }
                                 ])
                             ]
                         }
@@ -149,17 +169,6 @@ class ForooshgaheAlmas extends Component {
             ]
         }
     }
-    hint_layout(text) {
-        return {
-            size: 24, align: 'v',
-            className: 'size10 bold',
-            row: [
-                { size: 12 },
-                { size: 36, align: 'vh', html: (<div className='w-8 h-8 br-100' style={{ background: '#0093D2' }}></div>) },
-                { html: text }
-            ]
-        }
-    }
     button_layout(text) {
         return {
             className: 'of-visible', align: 'vh',
@@ -176,69 +185,65 @@ class ForooshgaheAlmas extends Component {
             )
         }
     }
-    header_layout() {
+    buttons_layout() {
         return {
             className: 'bgE0F6FF',
-            column: [
-                { size: 6 },
-                {
-                    row: [
-                        { size: 24 },
-                        { html: getSvg('svg2') },
-                        { flex: 1 },
-                        this.button_layout('الماس رایگان'),
-                        { size: 12 },
-                        this.button_layout('الماس اعتباری'),
-                        { size: 24 }
-
-                    ]
-                },
+            size: 60,
+            row: [
+                { flex: 1 },
+                this.button_layout('الماس رایگان'),
                 { size: 12 },
-                this.hint_layout('خرید الماس فقط از طریق کارت های بانکی امکان پذیر است'),
-                this.hint_layout('سقف خرید الماس روزانه 10000 عدد است'),
-                { size: 12 }
+                this.button_layout('الماس اعتباری'),
+                { flex: 1 }
             ]
         }
     }
-    cards_layout(){
-        let {packs} = this.state;
+    cards_layout() {
+        let { packs } = this.state;
         return {
-            gap:6,flex:1,className:'ofy-auto',column:packs.map((o)=>this.card_layout(o))
+            gap: 6, flex: 1, className: 'ofy-auto', column: packs.map((o) => this.card_layout(o))
         }
     }
-    card_layout({text,price,icon}){
+    card_layout({ text, price, icon }) {
         return {
-            style:{border:'1px solid #558ADD'},
-            className:'br-8 m-h-12 p-6',
-            row:[
+            style: { border: '1px solid #558ADD' },
+            className: 'br-8 m-h-12 p-6',
+            row: [
                 {
-                    flex:1,
-                    column:[
-                        {html:text,className:'size14 bold'},
-                        {html:`${price} تومان`,className:'size12'}
+                    flex: 1,
+                    column: [
+                        { html: text, className: 'size14 bold' },
+                        { html: `${price} تومان`, className: 'size12' }
                     ]
                 },
                 {
-                    html:getSvg(icon),align:'vh'
+                    html: getSvg(icon), align: 'vh'
                 }
             ]
         }
     }
     render() {
-        let {onClose} = this.props;
+        let { onClose } = this.props;
         return (
             <RVD
                 layout={{
                     className: 'page',
                     column: [
-                        { html: <Header/> },
-                        { html: <Titr text='فروشگاه الماس' onBack={()=>onClose()}/> },
+                        { html: <Header /> },
+                        { html: <Titr text='فروشگاه الماس' onBack={() => onClose()} /> },
                         {
                             style: { background: '#fff' },
                             flex: 1, scroll: 'v',
                             column: [
-                                this.header_layout(),
-                                {size:12},
+                                layout('hints', {
+                                    icon: getSvg('forooshgahe_almas'),
+                                    hints: [
+                                        'خرید الماس فقط از طریق کارت های بانکی امکان پذیر است',
+                                        'سقف خرید الماس روزانه 10000 عدد است'
+                                    ]
+                                }),
+                                this.buttons_layout(),
+                                { size: 12 },
                                 this.cards_layout()
                             ]
                         }
@@ -250,129 +255,109 @@ class ForooshgaheAlmas extends Component {
 }
 
 class TarakonesheAlmas extends Component {
+    static contextType = AppContext;
     constructor(props) {
         super(props);
         this.state = {
-            items:[
-                {success:true,status:{type:'واریز الماس',to:'علی واحدی',gems:320},date:'1401/4/5',time:'10:30'},
-                {success:false,status:{type:'تبدیل الماس به ریال',to:40000,gems:20},date:'1401/4/5',time:'10:30'},
-                {success:true,status:{type:'خرید الماس',to:180000,gems:500},date:'1401/4/5',time:'10:30'},
-                {success:true,status:{type:'دریافت الماس',to:'علی واحدی',gems:250},date:'1401/4/5',time:'10:30'},
-                {success:true,status:{type:'واریز الماس',to:'علی واحدی',gems:320},date:'1401/4/5',time:'10:30'},
-            ]
+            items: [
+                { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+                { success: false, status: { type: 'تبدیل الماس به ریال', to: 40000, gems: 20 }, date: '1401/4/5', time: '10:30' },
+                { success: true, status: { type: 'خرید الماس', to: 180000, gems: 500 }, date: '1401/4/5', time: '10:30' },
+                { success: true, status: { type: 'دریافت الماس', to: 'علی واحدی', gems: 250 }, date: '1401/4/5', time: '10:30' },
+                { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+            ],
+            tedade_almas_jahate_enteghal:0
         }
     }
-    hint_layout(text) {
+    addPopup(){
+        let {rsa_actions} = this.context;
+        let {tedade_almas_jahate_enteghal} = this.state;
+        rsa_actions.addPopup({
+            header:false,
+            body:()=>{
+                return (
+                    <RVD
+                        layout={{
+                            className:'gloss-popup',
+                            column:[
+                                {size:120,align:'vh',html:'انتقال جدید'},
+                                {
+                                    html:<input type='number' value={tedade_almas_jahate_enteghal} onChange={(e)=>this.setState({tedade_almas_jahate_enteghal:e.target.value})}/>
+                                },
+                                {
+                                    html:<Icon path={mdiCloseCircleOutline} size={2}/>
+                                }
+                            ]
+                        }}
+                    />
+                )
+            }
+        })
+    }
+    cards_layout() {
+        let { items } = this.state;
         return {
-            size: 24, align: 'v',
-            className: 'size10 bold',
-            row: [
-                { size: 12 },
-                { size: 36, align: 'vh', html: (<div className='w-8 h-8 br-100' style={{ background: '#0093D2' }}></div>) },
-                { html: text }
-            ]
+            gap: 6, flex: 1, className: 'ofy-auto', column: items.map((o) => this.card_layout(o))
         }
     }
-    header_layout() {
+    card_layout({ status, date, time, success }) {
+        let { type, to, gems } = status;
         return {
-            size:72,
-            className: 'bgE0F6FF',
-            row: [
-                { size: 24 },
-                {html:getSvg('svg3'),align:'vh'},
+            style: { borderBottom: '1px solid #ddd' },
+            className: 'm-h-12 p-6 size14',
+            column: [
                 {
-                    column:[
-                        {flex:1},
-                        this.hint_layout('امکان انتقال الماس به دوستان فراهم است'),
-                        this.hint_layout('سقف انتقال الماس روزانه 5000 عدد است'),
-                        {flex:1}
-                    ]
-                },
-            ]
-        }
-    }
-    add_layout(){
-        return {
-            size:36,align:'v',className:'m-h-12 br-8',
-            style:{color:'#00ADF6',border:'1px solid #00ADF6'},
-            row:[
-                {flex:1},
-                {html:'انتقال جدید',align:'v'},
-                {size:6},
-                {html:'+',align:'vh'},
-                {flex:1}
-            ]
-            
-        }
-    }
-    cards_header_layout(){
-        let {items} = this.state;
-        return {
-            size:36,align:'v',className:'p-h-12 size12 bold',
-            row:[
-                {html:'لیست تراکنش ها'},
-                {flex:1},
-                {html:`${items.length} مورد`}
-            ]
-        }
-    }
-    cards_layout(){
-        let {items} = this.state;
-        return {
-            gap:6,flex:1,className:'ofy-auto',column:items.map((o)=>this.card_layout(o))
-        }
-    }
-    card_layout({status,date,time,success}){
-        let {type,to,gems} = status;
-        return {
-            style:{borderBottom:'1px solid #ddd'},
-            className:'m-h-12 p-6 size14',
-            column:[
-                {
-                    row:[
-                        {html:type,className:''},
-                        {html:'|',align:'vh',size:12},
-                        {html:'موفق',className:'color107C10',show:!!success},
-                        {html:'نا موفق',className:'colorA4262C',show:!success},
-                        {flex:1},
-                        {html:typeof to === 'number'?(to + ' تومان'):`به ${to}`,className:'color005478 size12 bold'},
-                        {html:'|',align:'vh',size:12},
-                        {html:gems,className:'color8B1DCF'},
-                        {html:<Icon path={mdiDiamond} size={0.8}/>,className:'color005478'}
+                    row: [
+                        { html: type, className: '' },
+                        { html: '|', align: 'vh', size: 12 },
+                        { html: 'موفق', className: 'color107C10', show: !!success },
+                        { html: 'نا موفق', className: 'colorA4262C', show: !success },
+                        { flex: 1 },
+                        { html: typeof to === 'number' ? (to + ' تومان') : `به ${to}`, className: 'color005478 size12 bold' },
+                        { html: '|', align: 'vh', size: 12 },
+                        { html: gems, className: 'color8B1DCF' },
+                        { html: <Icon path={mdiDiamond} size={0.8} />, className: 'color005478' }
                     ]
                 },
                 {
-                    className:'size12',
-                    row:[
-                        {html:'زمان : '},
-                        {flex:1},
-                        {html:date},
-                        {html:'|',align:'vh',size:12},
-                        {html:time}
+                    className: 'size12',
+                    row: [
+                        { html: 'زمان : ' },
+                        { flex: 1 },
+                        { html: date },
+                        { html: '|', align: 'vh', size: 12 },
+                        { html: time }
                     ]
                 }
-                
+
             ]
         }
     }
     render() {
-        let {onClose} = this.props;
+        let { onClose } = this.props;
+        let { items } = this.state;
         return (
             <RVD
                 layout={{
                     className: 'page',
                     column: [
-                        { html: <Header/> },
-                        { html: <Titr text='تراکنش الماس' onBack={()=>onClose()}/> },
+                        { html: <Header /> },
+                        { html: <Titr text='تراکنش الماس' onBack={() => onClose()} /> },
                         {
                             style: { background: '#fff' },
                             flex: 1, scroll: 'v',
                             column: [
-                                this.header_layout(),
-                                {size:12},
-                                this.add_layout(),
-                                {size:12},
-                                this.cards_header_layout(),
+                                layout('hints', {
+                                    icon: getSvg('tarakoneshe_almas'),
+                                    hints: [
+                                        'امکان انتقال الماس به دوستان فراهم است',
+                                        'سقف انتقال الماس روزانه 5000 عدد است',
+                                    ]
+                                }),
+                                { size: 12 },
+                                layout('add_button', { text: 'انتقال جدید',onClick:()=>this.addPopup() }),
+                                { size: 12 },
+                                layout('list_header', { length: items.length, text: 'لیست تراکنش ها' }),
                                 this.cards_layout()
                             ]
                         }
@@ -387,21 +372,10 @@ class TabdileAlmas extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            nerkhe_tabdile_har_almas:2000,
-            saghfe_roozane:1000,
-            type:'2',
-            gemsForChange:0,
-        }
-    }
-    hint_layout(text) {
-        return {
-            size: 24, align: 'v',
-            className: 'size10 bold',
-            row: [
-                { size: 12 },
-                { size: 36, align: 'vh', html: (<div className='w-8 h-8 br-100' style={{ background: '#0093D2' }}></div>) },
-                { html: text }
-            ]
+            nerkhe_tabdile_har_almas: 2000,
+            saghfe_roozane: 1000,
+            type: '2',
+            gemsForChange: 0,
         }
     }
     button_layout(text) {
@@ -420,156 +394,145 @@ class TabdileAlmas extends Component {
             )
         }
     }
-    header_layout() {
+    cards_header_layout() {
+        let { items } = this.state;
         return {
-            className: 'bgE0F6FF',
+            size: 36, align: 'v', className: 'p-h-12 size12 bold',
             row: [
-                { size: 24 },
-                {html:getSvg('svg3'),align:'vh'},
-                {
-                    column:[
-                        {size:12},
-                        this.hint_layout(`نرخ تبدیل هر الماس 2000 تومان است`),
-                        this.hint_layout('سقف فروش الماس روزانه 1000 عدد است'),
-                        this.hint_layout('واریز وجه 24 ساعته انجام می شود'),
-                        {size:12}
-                    ]
-                },
+                { html: 'لیست تراکنش ها' },
+                { flex: 1 },
+                { html: `${items.length} مورد` }
             ]
         }
     }
-    cards_header_layout(){
-        let {items} = this.state;
-        return {
-            size:36,align:'v',className:'p-h-12 size12 bold',
-            row:[
-                {html:'لیست تراکنش ها'},
-                {flex:1},
-                {html:`${items.length} مورد`}
-            ]
-        }
-    }
-    tabdil_layout(){
-        let {gems} = this.context;
-        let {type,gemsForChange,nerkhe_tabdile_har_almas,saghfe_roozane} = this.state;
+    tabdil_layout() {
+        let { gems } = this.context;
+        let { type, gemsForChange, nerkhe_tabdile_har_almas, saghfe_roozane } = this.state;
         let submitText = 'درخواست تبدیل';
         let disabled = false;
-        if(gemsForChange > saghfe_roozane){
+        if (gemsForChange > saghfe_roozane) {
             disabled = true;
             submitText = 'بالاتر از سقف مجاز'
         }
-        if(!gemsForChange || isNaN(+gemsForChange)){disabled = true;}
+        if (!gemsForChange || isNaN(+gemsForChange)) { disabled = true; }
         return {
-            className:'p-h-16 size12 bold',
-            column:[
+            className: 'p-h-16 size12 bold',
+            column: [
                 {
-                    align:'vh',
-                    html:(
+                    align: 'vh',
+                    html: (
                         <AIOButton
                             type='radio'
                             options={[
-                                {text:'کل الماس ها',value:'1'},
-                                {text:'بخشی از الماس ها',value:'2'}
+                                { text: 'کل الماس ها', value: '1' },
+                                { text: 'بخشی از الماس ها', value: '2' }
                             ]}
                             value={type}
-                            onChange={(type)=>{
-                                if(type === '1'){gemsForChange = gems}
-                                else{gemsForChange = 0}
-                                this.setState({type,gemsForChange});
+                            onChange={(type) => {
+                                if (type === '1') { gemsForChange = gems }
+                                else { gemsForChange = 0 }
+                                this.setState({ type, gemsForChange });
                             }}
                         />
                     )
                 },
                 {
-                    size:48,
-                    row:[
+                    size: 48,
+                    row: [
                         {
-                            flex:1,
-                            row:[
-                                {flex:1},
-                                {html:'تعداد الماس برای تبدیل',align:'v'},
+                            flex: 1,
+                            row: [
+                                { flex: 1 },
+                                { html: 'تعداد الماس برای تبدیل', align: 'v' },
                             ]
                         },
-                        {size:24},
+                        { size: 24 },
                         {
-                            flex:1,
-                            row:[
+                            flex: 1,
+                            row: [
                                 {
-                                    align:'v',
-                                    html:(
-                                        <input 
+                                    align: 'v',
+                                    html: (
+                                        <input
                                             type='number' value={gemsForChange} disabled={type === '1'}
-                                            onChange={(e)=>{
+                                            onChange={(e) => {
                                                 let value = e.target.value;
-                                                this.setState({gemsForChange:value})
+                                                this.setState({ gemsForChange: value })
                                             }}
                                             className='h-36 w-168 br-8'
-                                            style={{border:'1px solid #ddd',textAlign:'center',boxSizing:'border-box'}}
+                                            style={{ border: '1px solid #ddd', textAlign: 'center', boxSizing: 'border-box' }}
                                         />
                                     )
                                 },
-                                {flex:1}
+                                { flex: 1 }
                             ]
                         }
                     ]
                 },
                 {
-                    size:48,
-                    row:[
+                    size: 48,
+                    row: [
                         {
-                            flex:1,
-                            row:[
-                                {flex:1},
-                                {html:'معادل الماس ها به تومان',align:'v'},
+                            flex: 1,
+                            row: [
+                                { flex: 1 },
+                                { html: 'معادل الماس ها به تومان', align: 'v' },
                             ]
-                            
+
                         },
-                        {size:24},
+                        { size: 24 },
                         {
-                            flex:1,
-                            row:[
+                            flex: 1,
+                            row: [
                                 {
-                                    align:'v',
-                                    html:(
-                                        <div  
-                                            onChange={(e)=>this.setState({gemsFormChange:e.target.value})}
+                                    align: 'v',
+                                    html: (
+                                        <div
+                                            onChange={(e) => this.setState({ gemsFormChange: e.target.value })}
                                             className='align-vh h-36 w-168 br-8 bgE0F6FF color005478'
                                         >{splitNumber(nerkhe_tabdile_har_almas * gemsForChange)}</div>
                                     )
                                 },
-                                {flex:1}
+                                { flex: 1 }
                             ]
                         },
                     ]
                 },
-                {size:12},
+                { size: 12 },
                 {
-                    align:'vh',
-                    html:(
-                        <button disabled={disabled} style={{maxWidth:240,background:'#00ADF6',color:'#fff',border:'none'}} className='w-100 h-36 br-8'>{submitText}</button>
+                    align: 'vh',
+                    html: (
+                        <button disabled={disabled} style={{ maxWidth: 240, background: '#00ADF6', color: '#fff', border: 'none' }} className='w-100 h-36 br-8'>{submitText}</button>
                     )
                 }
             ]
-            
+
         }
     }
     render() {
-        let {onClose} = this.props;
+        let { onClose } = this.props;
         return (
             <RVD
                 layout={{
                     className: 'page',
                     column: [
-                        { html: <Header/> },
-                        { html: <Titr text='تبدیل الماس' onBack={()=>onClose()}/> },
+                        { html: <Header /> },
+                        { html: <Titr text='تبدیل الماس' onBack={() => onClose()} /> },
                         {
                             style: { background: '#fff' },
                             flex: 1, scroll: 'v',
                             column: [
-                                this.header_layout(),
-                                {size:12},
+                                layout('hints', {
+                                    icon: getSvg('tabdile_almas'),
+                                    hints: [
+                                        `نرخ تبدیل هر الماس 2000 تومان است`,
+                                        'سقف فروش الماس روزانه 1000 عدد است',
+                                        'واریز وجه 24 ساعته انجام می شود'
+                                    ]
+                                }),
+                                { size: 12 },
                                 this.tabdil_layout(),
-                                {size:12},
+                                { size: 12 },
                             ]
                         }
                     ]
@@ -578,11 +541,142 @@ class TabdileAlmas extends Component {
         )
     }
 }
+class HesabHayeMan extends Component {
+    static contextType = AppContext;
+    constructor(props) {
+        super(props);
+        this.state = {
+            items:[
+                {number:'6219861033538751',name:'محمد شریف فیض',id:'1'},
+                {number:'6219861033538751',name:'محمد شریف فیض',id:'2'},
+                {number:'6219861033538751',name:'محمد شریف فیض',id:'3'},
+                {number:'6219861033538751',name:'محمد شریف فیض',id:'4'},
+                {number:'6219861033538751',name:'محمد شریف فیض',id:'5'},
+            ],
+            saghfe_roozane: 1000,
+            type: '2',
+            gemsForChange: 0,
+        }
+    }
+    cards_layout() {
+        let { items } = this.state;
+        return {
+            gap: 6, flex: 1, className: 'ofy-auto', column: items.map((o,i) => this.card_layout(o,i))
+        }
+    }
+    card_layout({ name,number,id },index) {
+        let {selected_credit_card,SetState} = this.context;
+        let active = id === selected_credit_card;
+        return {
+            onClick:()=>SetState({selected_credit_card:id}),
+            className:'of-visible',
+            row:[
+                {flex:1},
+                {size:60,html:(
+                    <Icon path={active?mdiCheckboxMarked:mdiCheckboxBlankOutline} size={1}/>
+                ),align:'vh',style:{color:active?'dodgerblue':'#333'}},
+                {size:280,html:<CreditCard index={index} number={number} name={name}/>,className:'of-visible'},
+                {flex:1}
+            ]
+        }
+    }
+    render() {
+        let { onClose } = this.props;
+        let {items} = this.state;
+        return (
+            <RVD
+                layout={{
+                    className: 'page',
+                    column: [
+                        { html: <Header /> },
+                        { html: <Titr text='حساب های من' onBack={() => onClose()} /> },
+                        {
+                            style: { background: '#fff' },
+                            flex: 1, scroll: 'v',
+                            column: [
+                                layout('hints', {
+                                    icon: getSvg('hesab_haye_man'),
+                                    hints: [
+                                        'حساب منتخب شما با نشانک آبی نمایش داده می شود',
+                                        'جهت اضافه کردن حساب جدید دکمه زیر را فشار دهید'
+                                    ]
+                                }),
+                                { size: 12 },
+                                layout('add_button',{text:'افزودن حساب جدید'}),
+                                {size:12},
+                                layout('list_header',{text:'حساب های من',length:items.length}),
+                                this.cards_layout(),
+                                { size: 12 },
+                            ]
+                        }
+                    ]
+                }}
+            />
+        )
+    }
+}
+function layout(type, parameter) {
+    if (type === 'list_header') {
+        let { text, length } = parameter;
+        return {
+            size: 36, align: 'v', className: 'p-h-12 size12 bold',
+            row: [
+                { html: text },
+                { flex: 1 },
+                { html: `${length} مورد` }
+            ]
+        }
+    }
+    if (type === 'add_button') {
+        let { text,onClick } = parameter;
+        return {
+            size: 36, align: 'v', className: 'm-h-12 br-8',
+            style: { color: '#00ADF6', border: '1px solid #00ADF6' },
+            onClick,
+            row: [
+                { flex: 1 },
+                { html: text, align: 'v' },
+                { size: 6 },
+                { html: '+', align: 'vh' },
+                { flex: 1 }
+            ]
 
+        }
+    }
+    if (type === 'hints') {
+        let { icon, hints } = parameter;
+        return {
+            className: 'bgE0F6FF',
+            row: [
+                { size: 24 },
+                { html: icon, align: 'vh' },
+                {
+                    column: [
+                        { size: 12 },
+                        {
+                            column: hints.map((o) => {
+                                return {
+                                    size: 24, align: 'v',
+                                    className: 'size10 bold',
+                                    row: [
+                                        { size: 12 },
+                                        { size: 36, align: 'vh', html: (<div className='w-8 h-8 br-100' style={{ background: '#0093D2' }}></div>) },
+                                        { html: o }
+                                    ]
+                                }
+                            })
+                        },
+                        { size: 12 }
+                    ]
+                },
+            ]
+        }
+    }
+}
 function getSvg(type) {
     if (type === 'svg1') {
         return (
-            <svg width="116" height="159" viewBox="0 0 116 159" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="70" height="159" viewBox="0 0 116 159" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M-15.0962 66.0869C-19.4933 66.8313 -22.4292 71.4923 -21.5971 76.4077C-20.7527 81.3954 -16.4585 84.7581 -12.0614 84.0137L88.3614 67.013C92.8232 66.2577 95.7591 61.5966 94.927 56.6812C94.0826 51.6935 89.7884 48.3309 85.3266 49.0862L-15.0962 66.0869Z" fill="#9A5F3B" />
                 <path d="M-8.8754 83.4746L96.4444 65.6449L94.927 56.6815L-3.0985 73.2764C-7.12957 73.9588 -9.71398 78.5212 -8.8754 83.4746Z" fill="#FFFAD1" />
                 <g clipPath="url(#clip0_2691_15896)">
@@ -611,7 +705,7 @@ function getSvg(type) {
         )
 
     }
-    if (type === 'svg2') {
+    if (type === 'forooshgahe_almas') {
         return (
             <svg width="66" height="91" viewBox="0 0 66 91" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_2691_15950)">
@@ -655,7 +749,7 @@ function getSvg(type) {
 
         )
     }
-    if (type === 'svg3') {
+    if (type === 'tarakoneshe_almas') {
         return (
             <svg width="76" height="33" viewBox="0 0 76 33" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8.8627 0.404811L7.09031 0.404812L7.43979 14.1645C7.53965 14.3893 7.6395 14.639 7.73935 14.8887C8.01395 15.5879 8.3884 16.3621 8.78781 17.1862C8.98752 17.6107 9.23715 18.0352 9.46182 18.4597C9.58664 18.6845 9.71145 18.9092 9.83627 19.134C9.96109 19.3588 10.1109 19.5835 10.2606 19.8083C10.8098 20.7073 11.4589 21.6312 12.1579 22.5302C12.5323 22.9797 12.8818 23.4292 13.2812 23.8787C13.4809 24.1035 13.6806 24.3033 13.8803 24.528C14.08 24.7528 14.2797 24.9525 14.5044 25.1773C14.9537 25.5768 15.3781 26.0014 15.8524 26.4009L16.5514 26.9753C16.801 27.1501 17.0257 27.3249 17.2753 27.5247C18.2489 28.2489 19.2724 28.8732 20.2709 29.4226C20.7952 29.6723 21.2944 29.947 21.8186 30.1717C22.0683 30.2966 22.3179 30.3965 22.5925 30.4964C22.8421 30.5963 23.1167 30.6962 23.3664 30.796C23.616 30.8959 23.8656 30.9958 24.1153 31.0707C24.3649 31.1457 24.6145 31.2455 24.8642 31.3205C25.3634 31.4703 25.8377 31.6201 26.312 31.72C27.2606 31.9697 28.1593 32.1196 28.9831 32.2444C30.6557 32.4692 32.0286 32.5191 33.0022 32.4942C33.9758 32.4692 34.5 32.4192 34.5 32.4192C34.5 32.4192 33.9508 32.3443 33.0521 32.0946C32.1285 31.8449 30.8554 31.4453 29.4075 30.796C28.6836 30.4714 27.9097 30.0968 27.1358 29.6473C26.7364 29.4226 26.362 29.1728 25.9626 28.9231C25.7628 28.7983 25.5631 28.6484 25.3884 28.5236C25.1887 28.3987 24.989 28.2489 24.8142 28.099C24.6145 27.9492 24.4398 27.7994 24.2401 27.6745C24.0653 27.5247 23.8656 27.3748 23.6659 27.2C23.2915 26.9004 22.942 26.5508 22.5675 26.2261C21.8686 25.5269 21.1946 24.8027 20.5954 24.0286L20.1461 23.4542L19.7217 22.8049C19.4471 22.4054 19.2225 21.9808 18.9728 21.5813C18.848 21.3815 18.7482 21.1817 18.6233 20.957C18.5235 20.7572 18.4236 20.5324 18.2988 20.3327C18.0991 19.9331 17.9244 19.4836 17.7496 19.0841C17.4251 18.26 17.1256 17.4359 16.9258 16.6617C16.8759 16.462 16.801 16.2872 16.7511 16.0874C16.7012 15.8876 16.6762 15.7128 16.6263 15.513C16.5514 15.1384 16.4515 14.7888 16.4016 14.4392C16.2768 13.74 16.2019 12.7661 16.152 12.1917L21.0947 11.2927L8.8627 0.404811Z" fill="#C99B36" />
@@ -678,7 +772,7 @@ function getSvg(type) {
 
         )
     }
-    if (type === 'svg4') {
+    if (type === 'tabdile_almas') {
         return (
             <svg width="88" height="63" viewBox="0 0 88 63" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_2691_15948)">
@@ -724,7 +818,7 @@ function getSvg(type) {
 
         )
     }
-    if (type === 'svg5') {
+    if (type === 'hesab_haye_man') {
         return (
             <svg width="82" height="87" viewBox="0 0 82 87" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_2691_15988)">
@@ -1238,4 +1332,73 @@ function getSvg(type) {
 
         )
     }
+    if (type === 'afzayeshe_etebar') {
+        return (
+            <svg width="50" height="44" viewBox="0 0 50 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M-1.29256e-06 3.89159L-1.70109e-07 29.5703C-7.63481e-08 31.7153 1.7563 33.4619 3.91317 33.4619L18.0868 33.4619C20.2437 33.4619 22 31.7153 22 29.5703L22 3.89159C22 1.74659 20.2437 -4.66612e-05 18.0868 -4.6567e-05L3.91317 -4.59474e-05C1.72549 -4.58518e-05 -1.38632e-06 1.74659 -1.29256e-06 3.89159Z" fill="#C99B36" />
+                <path d="M-1.29256e-06 5.17822L-1.70109e-07 30.8569C-7.6348e-08 33.0019 1.7563 34.7485 3.91317 34.7485L18.0868 34.7485C20.2437 34.7485 22 33.0019 22 30.8569L22 5.17822C22 3.03322 20.2437 1.28657 18.0868 1.28657L3.91317 1.28658C1.72549 1.28658 -1.38632e-06 3.03322 -1.29256e-06 5.17822Z" fill="#F7CA41" />
+                <path d="M12.6328 1.31722L12.6328 34.7485L17.0698 34.7485L17.0698 1.31722L12.6328 1.31722Z" fill="#4D4D4F" />
+                <path d="M5.57617 4.16746L5.57617 9.07031L10.5061 9.07031L10.5061 4.16746L5.57617 4.16746Z" fill="#FFFAD1" />
+                <path d="M9.58203 21.359L9.58203 31.8389L10.5064 31.8389L10.5064 21.359L9.58203 21.359Z" fill="#FFFAD1" />
+                <path d="M7.58008 21.359L7.58008 31.8389L8.50445 31.8389L8.50445 21.359L7.58008 21.359Z" fill="#FFFAD1" />
+                <path d="M5.57617 21.359L5.57617 31.8389L6.50054 31.8389L6.50054 21.359L5.57617 21.359Z" fill="#FFFAD1" />
+                <path d="M36.821 32.8934C35.5466 32.136 33.6114 31.6626 31.4402 31.6626C29.269 31.6626 27.3338 32.136 26.0594 32.8934H24.5254V34.9762C24.5254 36.7987 27.617 38.2898 31.4166 38.2898C35.2162 38.2898 38.3078 36.7987 38.3078 34.9762V32.8934H36.821Z" fill="#C99B36" />
+                <path d="M31.44 36.2068C35.2459 36.2068 38.3312 34.7232 38.3312 32.8932C38.3312 31.0631 35.2459 29.5796 31.44 29.5796C27.6341 29.5796 24.5488 31.0631 24.5488 32.8932C24.5488 34.7232 27.6341 36.2068 31.44 36.2068Z" fill="#F7CA41" />
+                <path d="M29.1973 33.5324C29.5041 33.6035 29.8109 33.6508 30.0705 33.6745C30.3301 33.6981 30.5661 33.7218 30.7549 33.7218C30.9201 33.7218 31.0617 33.6981 31.1797 33.6745C31.2977 33.6271 31.3685 33.5798 31.3685 33.5088C31.3685 33.4851 31.3685 33.4851 31.3449 33.4614C31.3449 33.4378 31.3213 33.4378 31.2977 33.4141C31.2741 33.3904 31.2505 33.3904 31.2269 33.3668C31.2033 33.3431 31.1561 33.3194 31.1325 33.3194C31.1089 33.2958 31.0145 33.2484 30.8257 33.1774C30.3065 32.9407 29.9761 32.7751 29.8109 32.6804C29.6693 32.6094 29.5749 32.5147 29.5041 32.42C29.4333 32.3254 29.3861 32.2307 29.3861 32.136C29.3861 32.065 29.4097 31.994 29.4569 31.923C29.5041 31.852 29.5749 31.781 29.6457 31.7336C29.7401 31.6626 29.8345 31.6153 29.9525 31.568C30.0705 31.5206 30.1885 31.4733 30.3301 31.4496C30.4717 31.426 30.6841 31.3786 30.9437 31.3549C30.9437 31.3076 30.9437 31.2839 30.9437 31.2603V31.1183V30.8579C31.2977 30.8579 31.5809 30.8579 31.8169 30.8579C32.0765 30.8579 32.3597 30.8579 32.6901 30.8579C32.6665 31.0236 32.6665 31.1183 32.6665 31.1656V31.3076C32.9733 31.3313 33.3037 31.3549 33.6105 31.4023C33.6341 31.6626 33.6577 31.8993 33.7049 32.1833C33.4453 32.136 33.2093 32.0887 32.9969 32.065C32.7845 32.0413 32.5957 32.0177 32.4541 32.0177C32.2889 32.0177 32.1473 32.0413 32.0529 32.065C31.9349 32.1123 31.8877 32.1597 31.8877 32.207C31.8877 32.2544 31.9113 32.3017 31.9821 32.349C32.0529 32.3964 32.1237 32.4437 32.2417 32.491C32.6665 32.6804 32.9733 32.8224 33.1621 32.9407C33.3509 33.0591 33.4925 33.1538 33.5869 33.2721C33.6577 33.3668 33.7049 33.4614 33.7049 33.5798C33.7049 33.6508 33.6813 33.7455 33.6341 33.8165C33.5869 33.8875 33.5161 33.9585 33.4453 34.0058C33.3509 34.0768 33.2565 34.1242 33.1621 34.1715C33.0441 34.2188 32.9497 34.2662 32.8317 34.2898C32.7137 34.3135 32.5485 34.3608 32.3125 34.4082V34.6922C32.3125 34.7869 32.3125 34.8815 32.3125 34.9762C31.9585 34.9762 31.6753 34.9762 31.4865 34.9762C31.2741 34.9762 30.9673 34.9762 30.5897 34.9762C30.6133 34.8579 30.6133 34.7395 30.6133 34.5739V34.4792C30.3537 34.4555 30.1413 34.4555 29.9525 34.4318C29.7873 34.4082 29.5749 34.3845 29.3153 34.3372C29.2681 33.9348 29.2209 33.6745 29.1973 33.5324Z" fill="#FFFAD1" />
+                <path d="M36.821 30.2425C35.5466 29.4851 33.6114 29.0117 31.4402 29.0117C29.269 29.0117 27.3338 29.4851 26.0594 30.2425H24.5254V32.3253C24.5254 34.1478 27.617 35.6389 31.4166 35.6389C35.2162 35.6389 38.3078 34.1478 38.3078 32.3253V30.2425H36.821Z" fill="#C99B36" />
+                <path d="M31.44 33.5559C35.2459 33.5559 38.3312 32.0723 38.3312 30.2423C38.3312 28.4123 35.2459 26.9287 31.44 26.9287C27.6341 26.9287 24.5488 28.4123 24.5488 30.2423C24.5488 32.0723 27.6341 33.5559 31.44 33.5559Z" fill="#F7CA41" />
+                <path d="M29.1973 30.8816C29.5041 30.9526 29.8109 30.9999 30.0705 31.0236C30.3301 31.0709 30.5661 31.0709 30.7549 31.0709C30.9201 31.0709 31.0617 31.0472 31.1797 31.0236C31.2977 30.9762 31.3685 30.9289 31.3685 30.8579C31.3685 30.8342 31.3685 30.8342 31.3449 30.8106C31.3449 30.7869 31.3213 30.7869 31.2977 30.7632C31.2741 30.7396 31.2505 30.7396 31.2269 30.7159C31.2033 30.6922 31.1561 30.6686 31.1325 30.6686C31.1089 30.6449 31.0145 30.5975 30.8257 30.5265C30.3065 30.2899 29.9761 30.1242 29.8109 30.0295C29.6693 29.9585 29.5749 29.8638 29.5041 29.7691C29.4333 29.6745 29.3861 29.5798 29.3861 29.4851C29.3861 29.4141 29.4097 29.3431 29.4569 29.2721C29.5041 29.2011 29.5749 29.1301 29.6457 29.0828C29.7401 29.0118 29.8345 28.9644 29.9525 28.9171C30.0705 28.8697 30.1885 28.8224 30.3301 28.7987C30.4717 28.7751 30.6841 28.7277 30.9437 28.7041C30.9437 28.6567 30.9437 28.6331 30.9437 28.6094V28.4674V28.207C31.2977 28.207 31.5809 28.207 31.8169 28.207C32.0765 28.207 32.3597 28.207 32.6901 28.207C32.6665 28.3727 32.6665 28.4674 32.6665 28.5147V28.7041C32.9733 28.7277 33.3037 28.7514 33.6105 28.7987C33.6341 29.0591 33.6577 29.2958 33.7049 29.5798C33.4453 29.5325 33.2093 29.4851 32.9969 29.4615C32.7845 29.4378 32.5957 29.4141 32.4541 29.4141C32.2889 29.4141 32.1473 29.4378 32.0529 29.4615C31.9349 29.5088 31.8877 29.5561 31.8877 29.6035C31.8877 29.6508 31.9113 29.6981 31.9821 29.7455C32.0529 29.7928 32.1237 29.8402 32.2417 29.8875C32.6665 30.0768 32.9733 30.2188 33.1621 30.3372C33.3509 30.4555 33.4925 30.5502 33.5869 30.6686C33.6577 30.7632 33.7049 30.8579 33.7049 30.9762C33.7049 31.0472 33.6813 31.1419 33.6341 31.2129C33.5869 31.2839 33.5161 31.3549 33.4453 31.4023C33.3509 31.4733 33.2565 31.5206 33.1621 31.568C33.0441 31.6153 32.9497 31.6626 32.8317 31.6863C32.7137 31.71 32.5485 31.7573 32.3125 31.8046V32.0887C32.3125 32.1833 32.3125 32.278 32.3125 32.3727C31.9585 32.3727 31.6753 32.3727 31.4865 32.3727C31.2741 32.3727 30.9673 32.3727 30.5897 32.3727C30.6133 32.2543 30.6133 32.136 30.6133 31.9703V31.8756C30.3537 31.852 30.1413 31.852 29.9525 31.8283C29.7873 31.8046 29.5749 31.781 29.3153 31.7336C29.2681 31.2839 29.2209 31.0236 29.1973 30.8816Z" fill="#FFFAD1" />
+                <path d="M36.821 27.5916C35.5466 26.8342 33.6114 26.3608 31.4402 26.3608C29.269 26.3608 27.3338 26.8342 26.0594 27.5916H24.5254V29.6744C24.5254 31.4969 27.617 32.988 31.4166 32.988C35.2162 32.988 38.3078 31.4969 38.3078 29.6744V27.5916H36.821Z" fill="#C99B36" />
+                <path d="M38.3547 27.5914C38.3547 29.4139 35.2631 30.905 31.4635 30.905C27.6639 30.905 24.5723 29.4139 24.5723 27.5914C24.5723 25.7689 27.6639 24.2778 31.4635 24.2778C35.2631 24.2778 38.3547 25.7689 38.3547 27.5914Z" fill="#F7CA41" />
+                <path d="M29.1973 28.2307C29.5041 28.3017 29.8109 28.349 30.0705 28.3727C30.3301 28.3964 30.5661 28.42 30.7549 28.42C30.9201 28.42 31.0617 28.3964 31.1797 28.3727C31.2977 28.3254 31.3685 28.278 31.3685 28.207C31.3685 28.1834 31.3685 28.1834 31.3449 28.1597C31.3449 28.136 31.3213 28.136 31.2977 28.1123C31.2741 28.0887 31.2505 28.0887 31.2269 28.065C31.2033 28.0413 31.1561 28.0177 31.1325 28.0177C31.1089 27.994 31.0145 27.9467 30.8257 27.8757C30.3065 27.639 29.9761 27.4733 29.8109 27.3786C29.6693 27.3076 29.5749 27.2129 29.5041 27.1183C29.4333 27.0236 29.3861 26.9289 29.3861 26.8342C29.3861 26.7632 29.4097 26.6922 29.4569 26.6212C29.5041 26.5502 29.5749 26.4792 29.6457 26.4319C29.7401 26.3609 29.8345 26.3135 29.9525 26.2662C30.0705 26.2189 30.1885 26.1715 30.3301 26.1479C30.4717 26.1242 30.6841 26.0769 30.9437 26.0532C30.9437 26.0059 30.9437 25.9822 30.9437 25.9585V25.8165V25.5562C31.2977 25.5562 31.5809 25.5562 31.8169 25.5562C32.0765 25.5562 32.3597 25.5562 32.6901 25.5562C32.6665 25.7218 32.6665 25.8165 32.6665 25.8638V26.0532C32.9733 26.0769 33.3037 26.1005 33.6105 26.1479C33.6341 26.4082 33.6577 26.6449 33.7049 26.9289C33.4453 26.8816 33.2093 26.8342 32.9969 26.8106C32.7845 26.7869 32.5957 26.7632 32.4541 26.7632C32.2889 26.7632 32.1473 26.7869 32.0529 26.8106C31.9349 26.8579 31.8877 26.9053 31.8877 26.9526C31.8877 26.9999 31.9113 27.0473 31.9821 27.0946C32.0529 27.1419 32.1237 27.1893 32.2417 27.2366C32.6665 27.426 32.9733 27.568 33.1621 27.6863C33.3509 27.8047 33.4925 27.8993 33.5869 28.0177C33.6577 28.1123 33.7049 28.207 33.7049 28.3254C33.7049 28.3964 33.6813 28.491 33.6341 28.562C33.5869 28.6331 33.5161 28.7041 33.4453 28.7514C33.3509 28.8224 33.2565 28.8697 33.1621 28.9171C33.0441 28.9644 32.9497 29.0117 32.8317 29.0354C32.7137 29.0591 32.5485 29.1064 32.3125 29.1538V29.4378C32.3125 29.5325 32.3125 29.6271 32.3125 29.7218C31.9585 29.7218 31.6753 29.7218 31.4865 29.7218C31.2741 29.7218 30.9673 29.7218 30.5897 29.7218C30.6133 29.6035 30.6133 29.4851 30.6133 29.3194V29.1774C30.3537 29.1538 30.1413 29.1538 29.9525 29.1301C29.7873 29.1064 29.5749 29.0828 29.3153 29.0354C29.2681 28.6567 29.2209 28.3964 29.1973 28.2307Z" fill="#FFFAD1" />
+                <path d="M36.821 24.9646C35.5466 24.2073 33.6114 23.7339 31.4402 23.7339C29.269 23.7339 27.3338 24.2073 26.0594 24.9646H24.5254V27.0475C24.5254 28.8699 27.617 30.3611 31.4166 30.3611C35.2162 30.3611 38.3078 28.8699 38.3078 27.0475V24.9646H36.821Z" fill="#C99B36" />
+                <path d="M38.3547 24.9645C38.3547 26.7869 35.2631 28.278 31.4635 28.278C27.6639 28.278 24.5723 26.7869 24.5723 24.9645C24.5723 23.142 27.6639 21.6509 31.4635 21.6509C35.2631 21.6509 38.3547 23.1183 38.3547 24.9645Z" fill="#F7CA41" />
+                <path d="M29.1973 25.6037C29.5041 25.6747 29.8109 25.7221 30.0705 25.7457C30.3301 25.7694 30.5661 25.7931 30.7549 25.7931C30.9201 25.7931 31.0617 25.7694 31.1797 25.7457C31.2977 25.6984 31.3685 25.6511 31.3685 25.5801C31.3685 25.5564 31.3685 25.5564 31.3449 25.5327C31.3449 25.5091 31.3213 25.5091 31.2977 25.4854C31.2741 25.4617 31.2505 25.4617 31.2269 25.4381C31.2033 25.4144 31.1561 25.3907 31.1325 25.3907C31.1089 25.3671 31.0145 25.3197 30.8257 25.2487C30.3065 25.012 29.9761 24.8463 29.8109 24.7517C29.6693 24.6807 29.5749 24.586 29.5041 24.4913C29.4333 24.3966 29.3861 24.302 29.3861 24.2073C29.3861 24.1363 29.4097 24.0653 29.4569 23.9943C29.5041 23.9233 29.5749 23.8523 29.6457 23.8049C29.7401 23.7339 29.8345 23.6866 29.9525 23.6393C30.0705 23.5919 30.1885 23.5446 30.3301 23.5209C30.4717 23.4972 30.6841 23.4499 30.9437 23.4262C30.9437 23.3789 30.9437 23.3552 30.9437 23.3316V23.1896V22.9292C31.2977 22.9292 31.5809 22.9292 31.8169 22.9292C32.0765 22.9292 32.3597 22.9292 32.6901 22.9292C32.6665 23.0949 32.6665 23.1896 32.6665 23.2369V23.4262C32.9733 23.4499 33.3037 23.4736 33.6105 23.5209C33.6341 23.7813 33.6577 24.0179 33.7049 24.302C33.4453 24.2546 33.2093 24.2073 32.9969 24.1836C32.7845 24.16 32.5957 24.1363 32.4541 24.1363C32.2889 24.1363 32.1473 24.16 32.0529 24.1836C31.9349 24.231 31.8877 24.2783 31.8877 24.3256C31.8877 24.373 31.9113 24.4203 31.9821 24.4676C32.0529 24.515 32.1237 24.5623 32.2417 24.6097C32.6665 24.799 32.9733 24.941 33.1621 25.0594C33.3509 25.1777 33.4925 25.2724 33.5869 25.3907C33.6577 25.4854 33.7049 25.5801 33.7049 25.6984C33.7049 25.7694 33.6813 25.8641 33.6341 25.9351C33.5869 26.0061 33.5161 26.0771 33.4453 26.1244C33.3509 26.1954 33.2565 26.2428 33.1621 26.2901C33.0441 26.3375 32.9497 26.3848 32.8317 26.4085C32.7137 26.4321 32.5485 26.4795 32.3125 26.5268V26.8108C32.3125 26.9055 32.3125 27.0002 32.3125 27.0948C31.9585 27.0948 31.6753 27.0948 31.4865 27.0948C31.2741 27.0948 30.9673 27.0948 30.5897 27.0948C30.6133 26.9765 30.6133 26.8582 30.6133 26.6925V26.5978C30.3537 26.5741 30.1413 26.5741 29.9525 26.5505C29.7873 26.5268 29.5749 26.5031 29.3153 26.4558C29.2681 26.0061 29.2209 25.7457 29.1973 25.6037Z" fill="#FFFAD1" />
+                <path d="M36.821 22.3138C35.5466 21.5564 33.6114 21.083 31.4402 21.083C29.269 21.083 27.3338 21.5564 26.0594 22.3138H24.5254V24.3966C24.5254 26.2191 27.617 27.7102 31.4166 27.7102C35.2162 27.7102 38.3078 26.2191 38.3078 24.3966V22.3138H36.821Z" fill="#C99B36" />
+                <path d="M38.3547 22.3136C38.3547 24.1361 35.2631 25.6272 31.4635 25.6272C27.6639 25.6272 24.5723 24.1361 24.5723 22.3136C24.5723 20.4911 27.6639 19 31.4635 19C35.2631 19 38.3547 20.4911 38.3547 22.3136Z" fill="#F7CA41" />
+                <path d="M29.1973 22.9529C29.5041 23.0239 29.8109 23.0712 30.0705 23.0949C30.3301 23.1185 30.5661 23.1422 30.7549 23.1422C30.9201 23.1422 31.0617 23.1185 31.1797 23.0949C31.2977 23.0475 31.3685 23.0002 31.3685 22.9292C31.3685 22.9055 31.3685 22.9055 31.3449 22.8819C31.3449 22.8582 31.3213 22.8582 31.2977 22.8345C31.2741 22.8108 31.2505 22.8108 31.2269 22.7872C31.2033 22.7635 31.1561 22.7398 31.1325 22.7398C31.1089 22.7162 31.0145 22.6688 30.8257 22.5978C30.3065 22.3611 29.9761 22.1955 29.8109 22.1008C29.6693 22.0298 29.5749 21.9351 29.5041 21.8404C29.4333 21.7458 29.3861 21.6511 29.3861 21.5564C29.3861 21.4854 29.4097 21.4144 29.4569 21.3434C29.5041 21.2724 29.5749 21.2014 29.6457 21.1541C29.7401 21.083 29.8345 21.0357 29.9525 20.9884C30.0705 20.941 30.1885 20.8937 30.3301 20.87C30.4717 20.8464 30.6841 20.799 30.9437 20.7754C30.9437 20.728 30.9437 20.7044 30.9437 20.6807V20.5387V20.2783C31.2977 20.2783 31.5809 20.2783 31.8169 20.2783C32.0765 20.2783 32.3597 20.2783 32.6901 20.2783C32.6665 20.444 32.6665 20.5387 32.6665 20.586V20.7754C32.9733 20.799 33.3037 20.8227 33.6105 20.87C33.6341 21.1304 33.6577 21.3671 33.7049 21.6511C33.4453 21.6038 33.2093 21.5564 32.9969 21.5327C32.7845 21.5091 32.5957 21.4854 32.4541 21.4854C32.2889 21.4854 32.1473 21.5091 32.0529 21.5327C31.9349 21.5801 31.8877 21.6274 31.8877 21.6748C31.8877 21.7221 31.9113 21.7694 31.9821 21.8168C32.0529 21.8641 32.1237 21.9114 32.2417 21.9588C32.6665 22.1481 32.9733 22.2901 33.1621 22.4085C33.3509 22.5268 33.4925 22.6215 33.5869 22.7398C33.6577 22.8345 33.7049 22.9292 33.7049 23.0475C33.7049 23.1185 33.6813 23.2132 33.6341 23.2842C33.5869 23.3552 33.5161 23.4262 33.4453 23.4736C33.3509 23.5446 33.2565 23.5919 33.1621 23.6392C33.0441 23.6866 32.9497 23.7339 32.8317 23.7576C32.7137 23.7813 32.5485 23.8286 32.3125 23.8759V24.1599C32.3125 24.2546 32.3125 24.3493 32.3125 24.444C31.9585 24.444 31.6753 24.444 31.4865 24.444C31.2741 24.444 30.9673 24.444 30.5897 24.444C30.6133 24.3256 30.6133 24.2073 30.6133 24.0416V23.9469C30.3537 23.9233 30.1413 23.9233 29.9525 23.8996C29.7873 23.8759 29.5749 23.8523 29.3153 23.8049C29.2681 23.3552 29.2209 23.0949 29.1973 22.9529Z" fill="#FFFAD1" />
+                <path d="M47.6765 35.1653C46.4021 34.4079 44.4669 33.9346 42.2957 33.9346C40.1245 33.9346 38.1893 34.4079 36.9149 35.1653H35.3809V37.2482C35.3809 39.0706 38.4725 40.5617 42.2721 40.5617C46.0717 40.5617 49.1633 39.0706 49.1633 37.2482V35.1653H47.6765Z" fill="#C99B36" />
+                <path d="M49.2101 35.1651C49.2101 36.9876 46.1185 38.4787 42.3189 38.4787C38.5193 38.4787 35.4277 36.9876 35.4277 35.1651C35.4277 33.3427 38.5193 31.8516 42.3189 31.8516C46.1185 31.8516 49.2101 33.3427 49.2101 35.1651Z" fill="#F7CA41" />
+                <path d="M40.0762 35.8044C40.383 35.8754 40.6898 35.9228 40.9494 35.9464C41.209 35.9701 41.445 35.9938 41.6338 35.9938C41.799 35.9938 41.9406 35.9701 42.0586 35.9464C42.1766 35.8991 42.2474 35.8518 42.2474 35.7808C42.2474 35.7571 42.2474 35.7571 42.2238 35.7334C42.2238 35.7097 42.2002 35.7097 42.1766 35.6861C42.153 35.6624 42.1294 35.6624 42.1058 35.6387C42.0822 35.6151 42.035 35.5914 42.0114 35.5914C41.9878 35.5677 41.8934 35.5204 41.7046 35.4494C41.1854 35.2127 40.855 35.047 40.6898 34.9524C40.5482 34.8813 40.4538 34.7867 40.383 34.692C40.3122 34.5973 40.265 34.5027 40.265 34.408C40.265 34.337 40.2886 34.266 40.3358 34.195C40.383 34.124 40.4538 34.053 40.5246 34.0056C40.619 33.9346 40.7134 33.8873 40.8314 33.8399C40.9494 33.7926 41.0674 33.7453 41.209 33.7216C41.3506 33.6979 41.563 33.6506 41.8226 33.6269C41.8226 33.5796 41.8226 33.5559 41.8226 33.5322V33.3902V33.1299C42.1766 33.1299 42.4598 33.1299 42.6958 33.1299C42.9554 33.1299 43.2386 33.1299 43.569 33.1299C43.5454 33.2956 43.5454 33.3902 43.5454 33.4376V33.6269C43.8522 33.6506 44.1826 33.6743 44.4894 33.7216C44.513 33.9819 44.5366 34.2186 44.5838 34.5027C44.3242 34.4553 44.0882 34.408 43.8758 34.3843C43.6634 34.3606 43.4746 34.337 43.333 34.337C43.1678 34.337 43.0262 34.3606 42.9318 34.3843C42.8138 34.4316 42.7666 34.479 42.7666 34.5263C42.7666 34.5737 42.7902 34.621 42.861 34.6683C42.9318 34.7157 43.0026 34.763 43.1206 34.8103C43.5454 34.9997 43.8522 35.1417 44.041 35.26C44.2298 35.3784 44.3714 35.4731 44.4658 35.5914C44.5366 35.6861 44.5838 35.7808 44.5838 35.8991C44.5838 35.9701 44.5602 36.0648 44.513 36.1358C44.4658 36.2068 44.395 36.2778 44.3242 36.3251C44.2298 36.3961 44.1354 36.4435 44.041 36.4908C43.923 36.5381 43.8286 36.5855 43.7106 36.6091C43.5926 36.6328 43.4274 36.6802 43.1914 36.7275V37.0115C43.1914 37.1062 43.1914 37.2009 43.1914 37.2955C42.8374 37.2955 42.5542 37.2955 42.3654 37.2955C42.153 37.2955 41.8462 37.2955 41.4686 37.2955C41.4922 37.1772 41.4922 37.0588 41.4922 36.8932V36.7512C41.2326 36.7275 41.0202 36.7275 40.8314 36.7038C40.6662 36.6802 40.4538 36.6565 40.1942 36.6091C40.1234 36.2068 40.0998 35.9464 40.0762 35.8044Z" fill="#FFFAD1" />
+                <path d="M47.6765 32.5149C46.4021 31.7575 44.4669 31.2842 42.2957 31.2842C40.1245 31.2842 38.1893 31.7575 36.9149 32.5149H35.3809V34.5978C35.3809 36.4202 38.4725 37.9113 42.2721 37.9113C46.0717 37.9113 49.1633 36.4202 49.1633 34.5978V32.5149H47.6765Z" fill="#C99B36" />
+                <path d="M49.2101 32.5148C49.2101 34.3372 46.1185 35.8283 42.3189 35.8283C38.5193 35.8283 35.4277 34.3372 35.4277 32.5148C35.4277 30.6923 38.5193 29.2012 42.3189 29.2012C46.1185 29.2012 49.2101 30.6923 49.2101 32.5148Z" fill="#F7CA41" />
+                <path d="M40.0762 33.154C40.383 33.225 40.6898 33.2724 40.9494 33.296C41.209 33.3197 41.445 33.3434 41.6338 33.3434C41.799 33.3434 41.9406 33.3197 42.0586 33.296C42.1766 33.2487 42.2474 33.2014 42.2474 33.1304C42.2474 33.1067 42.2474 33.1067 42.2238 33.083C42.2238 33.0594 42.2002 33.0594 42.1766 33.0357C42.153 33.012 42.1294 33.012 42.1058 32.9883C42.0822 32.9647 42.035 32.941 42.0114 32.941C41.9878 32.9173 41.8934 32.87 41.7046 32.799C41.1854 32.5623 40.855 32.3966 40.6898 32.302C40.5482 32.231 40.4538 32.1363 40.383 32.0416C40.3122 31.9469 40.265 31.8523 40.265 31.7576C40.265 31.6866 40.2886 31.6156 40.3358 31.5446C40.383 31.4736 40.4538 31.4026 40.5246 31.3552C40.5954 31.3079 40.7134 31.2369 40.8314 31.1895C40.9494 31.1422 41.0674 31.0949 41.209 31.0712C41.3506 31.0475 41.563 31.0002 41.8226 30.9765C41.8226 30.9292 41.8226 30.9055 41.8226 30.8819V30.7398V30.4795C42.1766 30.4795 42.4598 30.4795 42.6958 30.4795C42.9554 30.4795 43.2386 30.4795 43.569 30.4795C43.5454 30.6452 43.5454 30.7398 43.5454 30.7872V30.9765C43.8522 31.0002 44.1826 31.0239 44.4894 31.0712C44.513 31.3316 44.5366 31.5682 44.5838 31.8523C44.3242 31.8049 44.0882 31.7576 43.8758 31.7339C43.6634 31.7103 43.4746 31.6866 43.333 31.6866C43.1678 31.6866 43.0262 31.7103 42.9318 31.7339C42.8138 31.7813 42.7666 31.8286 42.7666 31.8759C42.7666 31.9233 42.7902 31.9706 42.861 32.0179C42.9318 32.0653 43.0026 32.1126 43.1206 32.16C43.5454 32.3493 43.8522 32.4913 44.041 32.6097C44.2298 32.728 44.3714 32.8227 44.4658 32.941C44.5366 33.0357 44.5838 33.1304 44.5838 33.2487C44.5838 33.3197 44.5602 33.4144 44.513 33.4854C44.4658 33.5564 44.395 33.6274 44.3242 33.6747C44.2298 33.7457 44.1354 33.7931 44.041 33.8404C43.923 33.8877 43.8286 33.9351 43.7106 33.9588C43.5926 33.9824 43.4274 34.0298 43.1914 34.0771V34.3611C43.1914 34.4558 43.1914 34.5505 43.1914 34.6451C42.8374 34.6451 42.5542 34.6451 42.3654 34.6451C42.153 34.6451 41.8462 34.6451 41.4686 34.6451C41.4922 34.5268 41.4922 34.4085 41.4922 34.2428V34.1481C41.2326 34.1244 41.0202 34.1244 40.8314 34.1008C40.6662 34.0771 40.4538 34.0534 40.1942 34.0061C40.1234 33.5801 40.0998 33.296 40.0762 33.154Z" fill="#FFFAD1" />
+                <path d="M47.6765 29.8875C46.4021 29.1301 44.4669 28.6567 42.2957 28.6567C40.1245 28.6567 38.1893 29.1301 36.9149 29.8875H35.3809V31.9703C35.3809 33.7928 38.4725 35.2839 42.2721 35.2839C46.0717 35.2839 49.1633 33.7928 49.1633 31.9703V29.8875H47.6765Z" fill="#C99B36" />
+                <path d="M42.3189 33.2009C46.1248 33.2009 49.2101 31.7174 49.2101 29.8873C49.2101 28.0573 46.1248 26.5737 42.3189 26.5737C38.513 26.5737 35.4277 28.0573 35.4277 29.8873C35.4277 31.7174 38.513 33.2009 42.3189 33.2009Z" fill="#F7CA41" />
+                <path d="M40.0762 30.5266C40.383 30.5976 40.6898 30.6449 40.9494 30.6686C41.209 30.6923 41.445 30.7159 41.6338 30.7159C41.799 30.7159 41.9406 30.6923 42.0586 30.6686C42.1766 30.6213 42.2474 30.5739 42.2474 30.5029C42.2474 30.4792 42.2474 30.4792 42.2238 30.4556C42.2238 30.4319 42.2002 30.4319 42.1766 30.4082C42.153 30.3846 42.1294 30.3846 42.1058 30.3609C42.0822 30.3372 42.035 30.3136 42.0114 30.3136C41.9878 30.2899 41.8934 30.2426 41.7046 30.1716C41.1854 29.9349 40.855 29.7692 40.6898 29.6745C40.5482 29.6035 40.4538 29.5088 40.383 29.4142C40.3122 29.3195 40.265 29.2248 40.265 29.1301C40.265 29.0591 40.2886 28.9881 40.3358 28.9171C40.383 28.8461 40.4538 28.7751 40.5246 28.7278C40.5954 28.6804 40.7134 28.6094 40.8314 28.5621C40.9494 28.5148 41.0674 28.4674 41.209 28.4438C41.3506 28.4201 41.563 28.3728 41.8226 28.3491C41.8226 28.3018 41.8226 28.2781 41.8226 28.2544V28.1124V27.8521C42.1766 27.8521 42.4598 27.8521 42.6958 27.8521C42.9554 27.8521 43.2386 27.8521 43.569 27.8521C43.5454 28.0177 43.5454 28.1124 43.5454 28.1597V28.3491C43.8522 28.3728 44.1826 28.3964 44.4894 28.4438C44.513 28.7041 44.5366 28.9408 44.5838 29.2248C44.3242 29.1775 44.0882 29.1301 43.8758 29.1065C43.6634 29.0828 43.4746 29.0591 43.333 29.0591C43.1678 29.0591 43.0262 29.0828 42.9318 29.1065C42.8138 29.1538 42.7666 29.2012 42.7666 29.2485C42.7666 29.2958 42.7902 29.3432 42.861 29.3905C42.9318 29.4378 43.0026 29.4852 43.1206 29.5325C43.5454 29.7219 43.8522 29.8639 44.041 29.9822C44.2298 30.1006 44.3714 30.1952 44.4658 30.3136C44.5366 30.4082 44.5838 30.5029 44.5838 30.6213C44.5838 30.6923 44.5602 30.7869 44.513 30.8579C44.4658 30.9289 44.395 31 44.3242 31.0473C44.2298 31.1183 44.1354 31.1656 44.041 31.213C43.923 31.2603 43.8286 31.3076 43.7106 31.3313C43.5926 31.355 43.4274 31.4023 43.1914 31.4497V31.7337C43.1914 31.8284 43.1914 31.923 43.1914 32.0177C42.8374 32.0177 42.5542 32.0177 42.3654 32.0177C42.153 32.0177 41.8462 32.0177 41.4686 32.0177C41.4922 31.8994 41.4922 31.781 41.4922 31.6153V31.5207C41.2326 31.497 41.0202 31.497 40.8314 31.4733C40.6662 31.4497 40.4538 31.426 40.1942 31.3787C40.1234 30.929 40.0998 30.6686 40.0762 30.5266Z" fill="#FFFAD1" />
+                <path d="M34.2956 38.2898C33.0212 37.5325 31.086 37.0591 28.9148 37.0591C26.7436 37.0591 24.8084 37.5325 23.534 38.2898H22V40.3727C22 42.1951 25.0916 43.6862 28.8912 43.6862C32.6908 43.6862 35.7824 42.1951 35.7824 40.3727V38.2898H34.2956Z" fill="#C99B36" />
+                <path d="M28.9146 41.6032C32.7205 41.6032 35.8058 40.1197 35.8058 38.2897C35.8058 36.4596 32.7205 34.9761 28.9146 34.9761C25.1087 34.9761 22.0234 36.4596 22.0234 38.2897C22.0234 40.1197 25.1087 41.6032 28.9146 41.6032Z" fill="#F7CA41" />
+                <path d="M26.6719 38.9289C26.9787 38.9999 27.2855 39.0473 27.5451 39.0709C27.8047 39.0946 28.0407 39.1183 28.2295 39.1183C28.3947 39.1183 28.5363 39.0946 28.6543 39.0709C28.7723 39.0236 28.8431 38.9763 28.8431 38.9053C28.8431 38.8816 28.8431 38.8816 28.8195 38.8579C28.8195 38.8343 28.7959 38.8343 28.7723 38.8106C28.7487 38.7869 28.7251 38.7869 28.7015 38.7633C28.6779 38.7396 28.6307 38.7159 28.6071 38.7159C28.5835 38.6922 28.4891 38.6449 28.3003 38.5739C27.7811 38.3372 27.4507 38.1715 27.2855 38.0769C27.1439 38.0059 27.0495 37.9112 26.9787 37.8165C26.9079 37.7218 26.8607 37.6272 26.8607 37.5325C26.8607 37.4615 26.8843 37.3905 26.9315 37.3195C26.9787 37.2485 27.0495 37.1775 27.1203 37.1301C27.2147 37.0591 27.3091 37.0118 27.4271 36.9644C27.5451 36.9171 27.6631 36.8698 27.8047 36.8461C27.9463 36.8224 28.1587 36.7751 28.4183 36.7514C28.4183 36.7041 28.4183 36.6804 28.4183 36.6568V36.5147V36.2544C28.7723 36.2544 29.0555 36.2544 29.2915 36.2544C29.5511 36.2544 29.8343 36.2544 30.1647 36.2544C30.1411 36.4201 30.1411 36.5147 30.1411 36.5621V36.7514C30.4479 36.7751 30.7783 36.7988 31.0851 36.8461C31.1087 37.1065 31.1323 37.3431 31.1795 37.6272C30.9199 37.5798 30.6839 37.5325 30.4715 37.5088C30.2591 37.4852 30.0703 37.4615 29.9287 37.4615C29.7635 37.4615 29.6219 37.4852 29.5275 37.5088C29.4095 37.5562 29.3623 37.6035 29.3623 37.6508C29.3623 37.6982 29.3859 37.7455 29.4567 37.7928C29.5275 37.8402 29.5983 37.8875 29.7163 37.9349C30.1411 38.1242 30.4479 38.2662 30.6367 38.3846C30.8255 38.5029 30.9671 38.5976 31.0615 38.7159C31.1323 38.8106 31.1795 38.9053 31.1795 39.0236C31.1795 39.0946 31.1559 39.1893 31.1087 39.2603C31.0615 39.3313 30.9907 39.4023 30.9199 39.4496C30.8255 39.5206 30.7311 39.568 30.6367 39.6153C30.5187 39.6627 30.4243 39.71 30.3063 39.7337C30.1883 39.7573 30.0231 39.8047 29.7871 39.852V40.136C29.7871 40.2307 29.7871 40.3254 29.7871 40.42C29.4331 40.42 29.1499 40.42 28.9611 40.42C28.7487 40.42 28.4419 40.42 28.0643 40.42C28.0879 40.3017 28.0879 40.1834 28.0879 40.0177V39.923C27.8283 39.8993 27.6159 39.8993 27.4271 39.8757C27.2619 39.852 27.0495 39.8283 26.7899 39.781C26.7191 39.3313 26.6955 39.0709 26.6719 38.9289Z" fill="#FFFAD1" />
+            </svg>
+
+        )
+    }
+    if (type === 'tasvie_etebar') {
+        return (
+            <svg width="48" height="39" viewBox="0 0 48 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.3114 5.16062C9.07597 5.36976 8.25113 6.67928 8.48492 8.06028C8.72215 9.46159 9.92862 10.4063 11.164 10.1972L39.3781 5.42081C40.6316 5.20859 41.4565 3.89907 41.2227 2.51807C40.9855 1.11676 39.779 0.172012 38.5254 0.384228L10.3114 5.16062Z" fill="#9A5F3B" />
+                <path d="M12.0591 10.0461L41.649 5.03681L41.2227 2.51852L13.6822 7.18089C12.5496 7.37262 11.8235 8.65444 12.0591 10.0461Z" fill="#FFFAD1" />
+                <path d="M8.48828 8.06787L11.9828 28.7101C12.1993 29.9886 13.3955 30.8535 14.6348 30.6437L42.9373 25.8524C44.1947 25.6395 45.0396 24.4291 44.8232 23.1505L44.4342 20.8528L41.7176 4.80599L11.1371 9.983C9.89783 10.1928 8.70159 9.3279 8.48828 8.06787Z" fill="#B06C45" />
+                <path d="M42.7898 24.8489L41.7145 25.031L41.6424 24.6048L42.7176 24.4227C42.8087 24.4073 42.8967 24.3734 42.9665 24.3425L43.1631 24.7285C43.0386 24.7687 42.9173 24.8273 42.7898 24.8489ZM40.3112 25.2685L38.908 25.5061L38.8358 25.0799L40.2391 24.8423L40.3112 25.2685ZM37.5229 25.7406L36.1196 25.9781L36.0475 25.5519L37.4508 25.3144L37.5229 25.7406ZM34.7164 26.2157L33.3131 26.4532L33.2409 26.0271L34.6442 25.7895L34.7164 26.2157ZM31.928 26.6877L30.5247 26.9253L30.4526 26.4991L31.8559 26.2615L31.928 26.6877ZM29.1215 27.1628L27.7182 27.4004L27.646 26.9742L29.0493 26.7367L29.1215 27.1628ZM26.3149 27.638L24.9116 27.8755L24.8395 27.4493L26.2428 27.2118L26.3149 27.638ZM23.5266 28.11L22.1233 28.3476L22.0511 27.9214L23.4544 27.6838L23.5266 28.11ZM20.72 28.5851L19.3167 28.8227L19.2446 28.3965L20.6479 28.1589L20.72 28.5851ZM17.9317 29.0572L16.5284 29.2947L16.4563 28.8686L17.8595 28.631L17.9317 29.0572ZM15.1251 29.5323L13.7401 29.7668L13.6679 29.3406L15.053 29.1061L15.1251 29.5323ZM43.8547 23.2772L43.4355 23.3482L43.194 21.9214L43.6131 21.8504L43.8547 23.2772Z" fill="#FFFAD1" />
+                <path d="M43.2668 19.8119L42.8477 19.8828L42.9669 20.5869L43.386 20.516L43.2668 19.8119Z" fill="#FFFAD1" />
+                <path d="M41.7141 10.659L41.2949 10.73L41.4141 11.4341L41.8333 11.3632L41.7141 10.659Z" fill="#FFFAD1" />
+                <path d="M41.2863 8.13851L40.8672 8.20947L41.0805 9.4695L41.4997 9.39854L41.2863 8.13851Z" fill="#FFFAD1" />
+                <path d="M41.0747 6.8787L40.6555 6.94966L40.574 6.46788L40.0819 6.55119L40.0098 6.125L40.921 5.97074L41.0747 6.8787Z" fill="#FFFAD1" />
+                <path d="M38.7334 6.77951L37.3848 7.00782L37.3126 6.58163L38.6612 6.35333L38.7334 6.77951ZM36.0362 7.23613L34.6875 7.46443L34.6154 7.03825L35.964 6.80994L36.0362 7.23613ZM33.3389 7.69274L31.9903 7.92105L31.9182 7.49486L33.2668 7.26656L33.3389 7.69274ZM30.66 8.14627L29.3114 8.37458L29.2392 7.94839L30.5878 7.72008L30.66 8.14627ZM27.9627 8.60288L26.6141 8.83119L26.542 8.405L27.8906 8.1767L27.9627 8.60288ZM25.2655 9.0595L23.9169 9.2878L23.8448 8.86162L25.1934 8.63331L25.2655 9.0595ZM22.5683 9.51611L21.2197 9.74442L21.1476 9.31823L22.4962 9.08992L22.5683 9.51611ZM19.8711 9.97272L18.5225 10.201L18.4504 9.77485L19.799 9.54654L19.8711 9.97272ZM17.1739 10.4293L15.8253 10.6576L15.7531 10.2315L17.1018 10.0032L17.1739 10.4293ZM14.4949 10.8829L13.1463 11.1112L13.0742 10.685L14.4228 10.4567L14.4949 10.8829ZM11.7977 11.3395L10.4491 11.5678L10.377 11.1416L11.7256 10.9133L11.7977 11.3395Z" fill="#FFFAD1" />
+                <path d="M43.6273 12.3163L40.2011 12.8964C38.7796 13.137 37.8109 14.5019 38.0587 15.9657L38.1905 16.744C38.4352 18.1893 39.7841 19.1808 41.2238 18.9371L44.65 18.3571C45.2878 18.2491 45.7254 17.6222 45.6156 16.9737L44.9913 13.2863C44.8815 12.6377 44.2834 12.2053 43.6273 12.3163Z" fill="#9A5F3B" />
+                <path d="M42.424 15.6081C42.5526 16.3678 42.0579 17.0997 41.2924 17.2292C40.5452 17.3557 39.8221 16.8491 39.6903 16.0709C39.5586 15.2926 40.0565 14.5793 40.8219 14.4498C41.5873 14.3202 42.2954 14.8484 42.424 15.6081Z" fill="#FFFAD1" />
+                <path d="M31.2801 31.306C29.5688 30.289 26.9702 29.6533 24.0547 29.6533C21.1392 29.6533 18.5407 30.289 16.8294 31.306H14.7695V34.1028C14.7695 36.55 18.9209 38.5523 24.023 38.5523C29.1252 38.5523 33.2766 36.55 33.2766 34.1028V31.306H31.2801Z" fill="#C99B36" />
+                <path d="M24.0504 35.7549C29.161 35.7549 33.3039 33.7628 33.3039 31.3054C33.3039 28.8481 29.161 26.856 24.0504 26.856C18.9398 26.856 14.7969 28.8481 14.7969 31.3054C14.7969 33.7628 18.9398 35.7549 24.0504 35.7549Z" fill="#F7CA41" />
+                <path d="M21.041 32.1636C21.453 32.259 21.865 32.3225 22.2135 32.3543C22.5621 32.3861 22.879 32.4179 23.1326 32.4179C23.3544 32.4179 23.5445 32.3861 23.703 32.3543C23.8614 32.2908 23.9565 32.2272 23.9565 32.1319C23.9565 32.1001 23.9565 32.1001 23.9248 32.0683C23.9248 32.0365 23.8931 32.0365 23.8614 32.0047C23.8297 31.9729 23.7981 31.9729 23.7664 31.9412C23.7347 31.9094 23.6713 31.8776 23.6396 31.8776C23.6079 31.8458 23.4812 31.7823 23.2276 31.6869C22.5304 31.3691 22.0868 31.1466 21.865 31.0195C21.6748 30.9241 21.5481 30.797 21.453 30.6699C21.3579 30.5428 21.2945 30.4156 21.2945 30.2885C21.2945 30.1932 21.3262 30.0978 21.3896 30.0025C21.453 29.9071 21.5481 29.8118 21.6431 29.7482C21.7699 29.6529 21.8966 29.5893 22.0551 29.5257C22.2135 29.4622 22.372 29.3986 22.5621 29.3668C22.7523 29.335 23.0375 29.2715 23.3861 29.2397C23.3861 29.1761 23.3861 29.1443 23.3861 29.1126V28.9219V28.5723C23.8614 28.5723 24.2417 28.5723 24.5586 28.5723C24.9072 28.5723 25.2875 28.5723 25.7312 28.5723C25.6995 28.7947 25.6995 28.9219 25.6995 28.9854V29.2397C26.1114 29.2715 26.5551 29.3033 26.9671 29.3668C26.9988 29.7164 27.0305 30.0342 27.0938 30.4156C26.7452 30.3521 26.4283 30.2885 26.1431 30.2567C25.8579 30.2249 25.6044 30.1931 25.4143 30.1931C25.1924 30.1931 25.0023 30.2249 24.8755 30.2567C24.7171 30.3203 24.6537 30.3838 24.6537 30.4474C24.6537 30.511 24.6854 30.5745 24.7805 30.6381C24.8755 30.7017 24.9706 30.7652 25.129 30.8288C25.6995 31.083 26.1114 31.2737 26.365 31.4326C26.6185 31.5916 26.8086 31.7187 26.9354 31.8776C27.0305 32.0047 27.0938 32.1319 27.0938 32.2908C27.0938 32.3861 27.0621 32.5132 26.9988 32.6086C26.9354 32.7039 26.8403 32.7993 26.7452 32.8628C26.6185 32.9582 26.4917 33.0218 26.365 33.0853C26.2065 33.1489 26.0797 33.2124 25.9213 33.2442C25.7628 33.276 25.541 33.3396 25.2241 33.4031V33.7845C25.2241 33.9116 25.2241 34.0388 25.2241 34.1659C24.7488 34.1659 24.3685 34.1659 24.115 34.1659C23.8297 34.1659 23.4178 34.1659 22.9107 34.1659C22.9424 34.007 22.9424 33.8481 22.9424 33.6256V33.4985C22.5938 33.4667 22.3086 33.4667 22.0551 33.4349C21.8333 33.4031 21.5481 33.3714 21.1995 33.3078C21.1044 32.7039 21.0727 32.3543 21.041 32.1636Z" fill="#FFFAD1" />
+                <path d="M20.5379 28.6204C18.8266 27.6034 16.228 26.9678 13.3126 26.9678C10.3971 26.9678 7.79847 27.6034 6.0872 28.6204H4.02734V31.4173C4.02734 33.8645 8.17875 35.8667 13.2809 35.8667C18.383 35.8667 22.5344 33.8645 22.5344 31.4173V28.6204H20.5379Z" fill="#C99B36" />
+                <path d="M13.3082 33.0694C18.4188 33.0694 22.5617 31.0773 22.5617 28.6199C22.5617 26.1625 18.4188 24.1704 13.3082 24.1704C8.19763 24.1704 4.05469 26.1625 4.05469 28.6199C4.05469 31.0773 8.19763 33.0694 13.3082 33.0694Z" fill="#F7CA41" />
+                <path d="M10.2988 29.4781C10.7108 29.5734 11.1228 29.637 11.4714 29.6688C11.82 29.7006 12.1369 29.7323 12.3904 29.7323C12.6122 29.7323 12.8023 29.7006 12.9608 29.6688C13.1192 29.6052 13.2143 29.5417 13.2143 29.4463C13.2143 29.4145 13.2143 29.4145 13.1826 29.3827C13.1826 29.351 13.1509 29.351 13.1192 29.3192C13.0876 29.2874 13.0559 29.2874 13.0242 29.2556C12.9925 29.2238 12.9291 29.1921 12.8974 29.1921C12.8657 29.1603 12.739 29.0967 12.4854 29.0014C11.7883 28.6835 11.3446 28.4611 11.1228 28.3339C10.9326 28.2386 10.8059 28.1115 10.7108 27.9843C10.6157 27.8572 10.5524 27.7301 10.5524 27.6029C10.5524 27.5076 10.584 27.4123 10.6474 27.3169C10.7108 27.2216 10.8059 27.1262 10.9009 27.0627C11.0277 26.9673 11.1545 26.9037 11.3129 26.8402C11.4714 26.7766 11.6298 26.7131 11.82 26.6813C12.0101 26.6495 12.2953 26.5859 12.6439 26.5541C12.6439 26.4906 12.6439 26.4588 12.6439 26.427V26.2363V25.8867C13.1192 25.8867 13.4995 25.8867 13.8164 25.8867C14.165 25.8867 14.5453 25.8867 14.989 25.8867C14.9573 26.1092 14.9573 26.2363 14.9573 26.2999V26.5541C15.3692 26.5859 15.8129 26.6177 16.2249 26.6813C16.2566 27.0309 16.2883 27.3487 16.3516 27.7301C16.0031 27.6665 15.6862 27.6029 15.4009 27.5712C15.1157 27.5394 14.8622 27.5076 14.6721 27.5076C14.4502 27.5076 14.2601 27.5394 14.1333 27.5712C13.9749 27.6347 13.9115 27.6983 13.9115 27.7619C13.9115 27.8254 13.9432 27.889 14.0383 27.9526C14.1333 28.0161 14.2284 28.0797 14.3869 28.1432C14.9573 28.3975 15.3692 28.5882 15.6228 28.7471C15.8763 28.906 16.0664 29.0331 16.1932 29.1921C16.2883 29.3192 16.3516 29.4463 16.3516 29.6052C16.3516 29.7006 16.32 29.8277 16.2566 29.923C16.1932 30.0184 16.0981 30.1137 16.0031 30.1773C15.8763 30.2726 15.7495 30.3362 15.6228 30.3998C15.4643 30.4633 15.3376 30.5269 15.1791 30.5587C15.0207 30.5905 14.7988 30.654 14.4819 30.7176V31.099C14.4819 31.2261 14.4819 31.3532 14.4819 31.4804C14.0066 31.4804 13.6263 31.4804 13.3728 31.4804C13.0876 31.4804 12.6756 31.4804 12.1685 31.4804C12.2002 31.3214 12.2002 31.1625 12.2002 30.9401V30.8129C11.8516 30.7812 11.5664 30.7812 11.3129 30.7494C11.0911 30.7176 10.8059 30.6858 10.4573 30.6222C10.3622 30.0184 10.3305 29.6688 10.2988 29.4781Z" fill="#FFFAD1" />
+                <path d="M16.5106 21.9061C14.7993 20.8891 12.2007 20.2534 9.28521 20.2534C6.36972 20.2534 3.77112 20.8891 2.05986 21.9061H0V24.7029C0 27.1501 4.15141 29.1524 9.25352 29.1524C14.3556 29.1524 18.507 27.1501 18.507 24.7029V21.9061H16.5106Z" fill="#C99B36" />
+                <path d="M9.28477 26.355C14.3953 26.355 18.5383 24.3629 18.5383 21.9055C18.5383 19.4482 14.3953 17.4561 9.28477 17.4561C4.17419 17.4561 0.03125 19.4482 0.03125 21.9055C0.03125 24.3629 4.17419 26.355 9.28477 26.355Z" fill="#F7CA41" />
+                <path d="M6.27344 22.7642C6.68541 22.8596 7.09738 22.9231 7.44597 22.9549C7.79456 22.9867 8.11147 23.0185 8.36499 23.0185C8.58682 23.0185 8.77696 22.9867 8.93541 22.9549C9.09386 22.8914 9.18893 22.8278 9.18893 22.7324C9.18893 22.7007 9.18893 22.7007 9.15724 22.6689C9.15724 22.6371 9.12555 22.6371 9.09386 22.6053C9.06217 22.5735 9.03048 22.5735 8.99879 22.5417C8.9671 22.51 8.90372 22.4782 8.87203 22.4782C8.84034 22.4464 8.71358 22.3828 8.46005 22.2875C7.76287 21.9697 7.31921 21.7472 7.09738 21.6201C6.90724 21.5247 6.78048 21.3976 6.68541 21.2705C6.59034 21.1433 6.52696 21.0162 6.52696 20.8891C6.52696 20.7937 6.55865 20.6984 6.62203 20.603C6.68541 20.5077 6.78048 20.4124 6.87555 20.3488C7.00231 20.2534 7.12907 20.1899 7.28752 20.1263C7.44597 20.0627 7.60442 19.9992 7.79456 19.9674C7.98471 19.9356 8.26991 19.8721 8.6185 19.8403C8.6185 19.7767 8.6185 19.7449 8.6185 19.7131V19.5225V19.1729C9.09386 19.1729 9.47414 19.1729 9.79104 19.1729C10.1396 19.1729 10.5199 19.1729 10.9636 19.1729C10.9319 19.3953 10.9319 19.5225 10.9319 19.586V19.8403C11.3439 19.8721 11.7875 19.9038 12.1995 19.9674C12.2312 20.317 12.2629 20.6348 12.3263 21.0162C11.9777 20.9526 11.6608 20.8891 11.3755 20.8573C11.0903 20.8255 10.8368 20.7937 10.6467 20.7937C10.4248 20.7937 10.2347 20.8255 10.1079 20.8573C9.94949 20.9209 9.88611 20.9844 9.88611 21.048C9.88611 21.1116 9.9178 21.1751 10.0129 21.2387C10.1079 21.3022 10.203 21.3658 10.3615 21.4294C10.9319 21.6836 11.3439 21.8743 11.5974 22.0332C11.8509 22.1921 12.041 22.3193 12.1678 22.4782C12.2629 22.6053 12.3263 22.7324 12.3263 22.8914C12.3263 22.9867 12.2946 23.1138 12.2312 23.2092C12.1678 23.3045 12.0727 23.3999 11.9777 23.4634C11.8509 23.5588 11.7241 23.6223 11.5974 23.6859C11.4389 23.7495 11.3122 23.813 11.1537 23.8448C10.9953 23.8766 10.7734 23.9402 10.4565 24.0037V24.3851C10.4565 24.5122 10.4565 24.6394 10.4565 24.7665C9.98118 24.7665 9.6009 24.7665 9.34738 24.7665C9.06217 24.7665 8.65019 24.7665 8.14315 24.7665C8.17484 24.6076 8.17484 24.4487 8.17484 24.2262V24.0991C7.82625 24.0673 7.54104 24.0673 7.28752 24.0355C7.06569 24.0037 6.78048 23.9719 6.43189 23.9084C6.33682 23.3045 6.30513 22.9549 6.27344 22.7642Z" fill="#FFFAD1" />
+            </svg>
+
+        )
+    }
+
 }
