@@ -114,6 +114,10 @@ export default function apis({getState}){
               {title:'حجم خرید',text:'به ازای هر یک میلیون تومان خرید 1/5 امتیاز ',max:250,value:85,labelStep:50,affix:'میلیون',mileStones:[50,100,200]},
               {title:'تنوع سبد خرید',text:'برای فاکتور های 4 تا 7 میلیون تومانی 15 امتیاز و بیشتر از 7 میلیون 42 امتیاز',max:20,value:15,labelStep:1,affix:'قلم',mileStones:[7,10,15]},
             ]
+          },
+          async hazfe_hesab(id){
+            return true
+            //return 'خطایی رخ داد'
           }
     }
 }

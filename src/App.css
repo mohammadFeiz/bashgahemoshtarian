@@ -4,6 +4,7 @@ body{
 button,input{
   font-family:inherit;
   outline:0;
+  color:inherit;
 }
 .rsa-bottom-menu{
   height:88px;
@@ -43,6 +44,51 @@ button,input{
   background:#005478bb;
   color:#fff;
   height:100%;
+}
+.gloss-popup input{
+  width: 100%;
+  height:42px;
+  padding:0 12px;
+  color:inherit;
+  background:none;
+  border:1px solid #fff;
+  border-radius:12px;
+}
+.gloss-popup a{
+  color:#FDB913;
+  font-weight:bold;
+}
+.gloss-popup button{
+  height:36px;
+  width: 100%;
+  background:none;
+  border:1px solid;
+  border-radius:36px;
+}
+.gloss-popup .icon-button{
+  border:1px solid #fff;
+  padding:12px;
+  border-radius:100%;
+}
+.gloss-popup .aio-form{
+  background:none;
+  color:#fff;
+}
+.gloss-popup .aio-form-row{
+  margin-bottom:12px;
+}
+.gloss-popup .aio-form-body{
+  padding:0;
+}
+.gloss-popup .aio-form-footer{
+  background:none;
+  justify-content: center;
+  height:72px;
+  padding-top:24px !important;
+}
+.gloss-popup .aio-form-submit-button{
+  width:220px;
+  border:1px solid #fff !important;
 }
 .page{
   background: radial-gradient(61.69% 61.69% at 50% 38.31%, #95DFFE 0%, #26A4DA 100%);

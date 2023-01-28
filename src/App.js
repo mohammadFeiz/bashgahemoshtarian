@@ -13,11 +13,14 @@ import AppContext from './app-context';
 import gemSrc from './images/gem.gif';
 import './App.css';
 import RVD from './npm/react-virtual-dom/react-virtual-dom';
+import AIOStorage from './npm/aio-storage/aio-storage'
 export default class App extends Component{
   constructor(props){
     super(props);
+    let Storage = AIOStorage('bashgah-storage')
     this.state = {
-      apis:AIOService({apis,getState:()=>this.state}),
+      apis:AIOService({apis,getState:()=>this.state,onError:this.onError.bind(this),onSuccess:this.onSuccess.bind(this)}),
+      Storage,
       gems:0,
       history:[],
       details:[],
@@ -38,8 +41,25 @@ export default class App extends Component{
       },
       nerkhe_tabdile_har_almas: 2000,
       pishnahade_tabdile_almas: 5000,
+      saghfe_enteghale_almas:5000,
       selected_credit_card:'1'
     }
+  }
+  onError(message,{errorTitle}){
+    let {rsa_actions} = this.state;
+    rsa_actions.setConfirm({
+      type:'error',
+      text:errorTitle,
+      subtext:message
+    })
+  }
+  onSuccess(result,{successTitle}){
+    if(!successTitle){return false}
+    let {rsa_actions} = this.state;
+    rsa_actions.setConfirm({
+      type:'success',
+      text:successTitle,
+    })
   }
   async getGems(){
     const {apis} = this.state;
@@ -126,9 +146,9 @@ export default class App extends Component{
           }}
           splash={()=><Splash/>}
           splashTime={6000}
-          getActions={({addPopup})=>{
+          getActions={({addPopup,removePopup,setConfirm})=>{
               let actions =  {
-                addPopup
+                addPopup,removePopup,setConfirm
               }
               this.state.rsa_actions = actions;
               this.setState({

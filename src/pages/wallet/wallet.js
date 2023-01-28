@@ -4,9 +4,10 @@ import Header from "../../components/header/header";
 import AIOButton from './../../npm/aio-button/aio-button';
 import Titr from "../../components/header/titr/titr";
 import CreditCard from './../../components/credit-card/credit-card';
+import Form from './../../npm/aio-form-react/aio-form-react';
 import { splitNumber } from './../../npm/react-super-app/react-super-app';
 import { Icon } from "@mdi/react";
-import { mdiCheckbook, mdiCheckboxBlank, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiCloseCircleOutline, mdiDiamond, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiArrowULeftTopBold, mdiCheckbook, mdiCheckboxBlank, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiClose, mdiDiamond, mdiPlusBoxOutline } from '@mdi/js';
 import AppContext from "../../app-context";
 import './wallet.css';
 export default class Wallet extends Component {
@@ -14,12 +15,8 @@ export default class Wallet extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: 'hesab_haye_man',
-            
+            page: false
         }
-    }
-    async componentDidMount() {
-
     }
     mojoodi_layout() {
         let { gems , nerkhe_tabdile_har_almas } = this.context;
@@ -30,24 +27,12 @@ export default class Wallet extends Component {
                 { size: 12 },
                 {
                     size:160,
-                    column:[
-                        {
-                            row:[
-                                {flex:1},
-                                { html: gems, align: 'v', className: 'size24 bold color005478' },
-                                { size: 6 },
-                                { html: 'الماس', align: 'v', className: 'size14 bold color005478' }
-                            ]
-                        },
-                        {
-                            row:[
-                                {flex:1},
-                                { html:splitNumber( gems * nerkhe_tabdile_har_almas ), align: 'v', className: 'size24 bold color005478' },
-                                { size: 6 },
-                                { html: 'تومان', align: 'v', className: 'size14 bold color005478' },
-                            ]
-                        }
-                    ]
+                    column:[[gems,'الماس'],[splitNumber( gems * nerkhe_tabdile_har_almas ),'تومان']].map(([value,unit])=>{
+                        return {
+                            childsProps:{align: 'v', className: 'size24 bold color005478'},
+                            row:[{flex:1},{ html: value },{ size: 6 },{ html: unit }]
+                        } 
+                    })
                 },
                 { size: 24 },
                 { html: <Icon path={mdiPlusBoxOutline} size={1} />, align: 'vh', className: 'color005478' },
@@ -271,27 +256,9 @@ class TarakonesheAlmas extends Component {
     }
     addPopup(){
         let {rsa_actions} = this.context;
-        let {tedade_almas_jahate_enteghal} = this.state;
         rsa_actions.addPopup({
             header:false,
-            body:()=>{
-                return (
-                    <RVD
-                        layout={{
-                            className:'gloss-popup',
-                            column:[
-                                {size:120,align:'vh',html:'انتقال جدید'},
-                                {
-                                    html:<input type='number' value={tedade_almas_jahate_enteghal} onChange={(e)=>this.setState({tedade_almas_jahate_enteghal:e.target.value})}/>
-                                },
-                                {
-                                    html:<Icon path={mdiCloseCircleOutline} size={2}/>
-                                }
-                            ]
-                        }}
-                    />
-                )
-            }
+            body:()=><EnteghaleAlmas/>
         })
     }
     cards_layout() {
@@ -336,6 +303,7 @@ class TarakonesheAlmas extends Component {
     render() {
         let { onClose } = this.props;
         let { items } = this.state;
+        let { saghfe_enteghale_almas } = this.context;
         return (
             <RVD
                 layout={{
@@ -351,7 +319,7 @@ class TarakonesheAlmas extends Component {
                                     icon: getSvg('tarakoneshe_almas'),
                                     hints: [
                                         'امکان انتقال الماس به دوستان فراهم است',
-                                        'سقف انتقال الماس روزانه 5000 عدد است',
+                                        `سقف انتقال الماس روزانه ${saghfe_enteghale_almas} عدد است`,
                                     ]
                                 }),
                                 { size: 12 },
@@ -361,6 +329,194 @@ class TarakonesheAlmas extends Component {
                                 this.cards_layout()
                             ]
                         }
+                    ]
+                }}
+            />
+        )
+    }
+}
+class EnteghaleAlmas extends Component{
+    static contextType = AppContext;
+    state = {
+        tedade_almas_jahate_enteghal:0,searchValue:'',girande:false,
+        searchResult:[
+            {name:'محمد فیض',phone:'09123534314',id:'1'},
+            {name:'محمد فیض',phone:'09123534314',id:'2'},
+            {name:'محمد فیض',phone:'09123534314',id:'3'},
+            {name:'محمد فیض',phone:'09123534314',id:'4'},
+            {name:'محمد فیض',phone:'09123534314',id:'5'},
+            {name:'محمد فیض',phone:'09123534314',id:'6'},
+            {name:'محمد فیض',phone:'09123534314',id:'7'},
+            {name:'محمد فیض',phone:'09123534314',id:'8'},
+            {name:'محمد فیض',phone:'09123534314',id:'9'},
+            {name:'محمد فیض',phone:'09123534314',id:'10'},
+        ]
+    }
+    iconButton(path){
+        return <Icon path={path} size={1} className='icon-button'/>
+    }
+    page1_layout(){
+        let {saghfe_enteghale_almas,rsa_actions} = this.context;
+        let {tedade_almas_jahate_enteghal,searchValue,searchResult,girande} = this.state;
+        if(girande){return false}
+        return {
+            flex:1,
+            column:[
+                layout('gloss_popup_label','تعداد الماس جهت انتقال را وارد کنید'),
+                {
+                    html:(
+                        <input 
+                            type='number' value={tedade_almas_jahate_enteghal} 
+                            onChange={(e)=>this.setState({tedade_almas_jahate_enteghal:e.target.value})}
+                        />
+                    )
+                },
+                {size:12},
+                {
+                    html:`تا سقف ${saghfe_enteghale_almas} الماس روزانه`,align:'vh'
+                },
+                {size:36},
+                layout('gloss_popup_label','جستجوی گیرنده الماس'),
+                {
+                    html:(
+                        <input 
+                            type='text' value={searchValue} 
+                            onChange={(e)=>this.setState({searchValue:e.target.value})}
+                        />
+                    )
+                },
+                {size:12},
+                {
+                    flex:1,
+                    className:'m-h-24 of-auto',
+                    column:searchResult.map((o)=>{
+                        let {name,phone,id} = o;
+                        return {
+                            size:48,align:'v',
+                            onClick:()=>this.setState({girande:o}),
+                            style:{background:'rgba(255,255,255,0.1)',marginBottom:6,padding:'0 12px'},
+                            column:[
+                                {html:name,className:'fs-14 bold'},
+                                {html:phone,className:'fs-12'}
+                            ]
+                        }
+                    })
+                },
+                {
+                    size:96,align:'vh',html:this.iconButton(mdiClose),onClick:()=>rsa_actions.removePopup()
+                }
+            ]
+        }
+    }
+    girande_layout(){
+        let {tedade_almas_jahate_enteghal,girande} = this.state;
+        return {
+            className:'fs-14',
+            childsAttrs:{style:{margin:'0 36px'}},
+            column:[
+                {size:36,html:`نام و نام خانوادگی : ${girande.name}`,align:'vh'},
+                {size:36,html:`شماره تماس : ${girande.phone}`,align:'vh'},
+                {size:36,html:`تعداد الماس : ${tedade_almas_jahate_enteghal}`,align:'vh'}, 
+            ]
+        }
+    }   
+    page2_layout(){
+        let {girande,password} = this.state;
+        if(!girande){return false}
+        return {
+            flex:1,
+            column:[
+                layout('gloss_popup_label','مشخصات گیرنده'),
+                this.girande_layout(),
+                {size:36},
+                layout('gloss_popup_label','در صورت تائید، رمز پرداخت را وارد نمائید'),
+                {size:12},
+                {
+                    html:(
+                        <input 
+                            type='password' value={password} placeholder='رمز پرداخت 6 رقمی را وارد کنید'
+                            onChange={(e)=>this.setState({password:e.target.value})}
+                        />
+                    )
+                },
+                {size:12},
+                {
+                    className:'m-h-48 fs-12',
+                    html:(
+                        <div>در صورتی که رمز پرداخت ندارید ، در <a>منوی پروفایل</a> رمز جدید تعریف کنید</div>
+                    )
+                },
+                {size:36},
+                {
+                    align:'vh',className:'m-h-36',
+                    html:(
+                        <button>تایید</button>
+                    )
+                },
+                {flex:1},
+                {size:96,align:'vh',html:layout('gloss_popup_icon_button',mdiArrowULeftTopBold),onClick:()=>this.setState({girande:false})}
+            ]
+        }
+    }
+    render(){
+        return (
+            <RVD
+                layout={{
+                    className:'gloss-popup',
+                    column:[
+                        layout('gloss_popup_header','انتقال جدید'),
+                        this.page1_layout(),
+                        this.page2_layout()
+                    ]
+                }}
+            />
+        )
+    }
+}
+class AfzoodaneHesab extends Component{
+    static contextType = AppContext;
+    state = {
+        model:{
+            firstName:'',lastName:'',cardNumber:'',shebaNumber:'',mah:'',sal:'',cvv2:''
+        }
+    }
+    onSubmit(){
+
+    }
+    render(){
+        let {rsa_actions} = this.context;
+        let {model} = this.state;
+        let layout = GlossPopupLayout;
+        return (
+            <RVD
+                layout={{
+                    className:'gloss-popup p-h-36 fs-14',
+                    column:[
+                        layout('header','افزودن حساب جدید'),
+                        {
+                            html:(
+                                <Form
+                                    model={model}
+                                    onChange={(model)=>this.setState({model})}
+                                    onSubmit={()=>this.onSubmit()}
+                                    submitText='ثبت کارت'
+                                    inputs={[
+                                        {type:'text',field:'model.firstName',label:'نام'},
+                                        {type:'text',field:'model.lastName',label:'نام خانوادگی'},
+                                        {type:'text',field:'model.cardNumber',label:'شماره کارت'},
+                                        {type:'text',field:'model.shebaNumber',label:'شماره شبا'},
+                                        {type:'number',field:'model.mah',label:'تاریخ انقضا',rowKey:'1',placeHolder:'ماه'},
+                                        {type:'html',html:()=><div style={{marginTop:24,fontSize:16,textAlign:'center',width:12}}>/</div>,rowWidth:12,rowKey:'1'},
+                                        {type:'number',field:'model.sal',label:'',rowKey:'1',placeHolder:'سال'},
+                                        {type:'html',rowWidth:12,rowKey:'1'},
+                                        {type:'number',field:'model.cvv2',label:'cvv2',rowKey:'1'},
+
+                                    ]}
+                                />
+                            )
+                        },
+                        {flex:1},
+                        {size:96,align:'vh',html:layout('icon_button',mdiClose),onClick:()=>rsa_actions.removePopup()}
                     ]
                 }}
             />
@@ -556,7 +712,26 @@ class HesabHayeMan extends Component {
             saghfe_roozane: 1000,
             type: '2',
             gemsForChange: 0,
+            selected_credit_card:false
         }
+    }
+    componentDidMount(){
+        let {Storage} = this.context;
+        let {items} = this.state;
+        let selected_credit_card = Storage.load('selected-credit-card',false);
+        if(items.length){
+            if(selected_credit_card === false || !items.find(({id})=>id === selected_credit_card)){
+                selected_credit_card = items[0].id;
+            }
+        }
+        this.setState({selected_credit_card});
+    }
+    addPopup(){
+        let {rsa_actions} = this.context;
+        rsa_actions.addPopup({
+            header:false,
+            body:()=><AfzoodaneHesab/>
+        })
     }
     cards_layout() {
         let { items } = this.state;
@@ -564,8 +739,25 @@ class HesabHayeMan extends Component {
             gap: 6, flex: 1, className: 'ofy-auto', column: items.map((o,i) => this.card_layout(o,i))
         }
     }
+    async remove(id){
+        let {apis} = this.context;
+        let res = await apis({api:'hazfe_hesab',parameter:id,def:false,errorTitle:'حساب شما حذف نشد',successTitle:'حساب شما با موفقیت حذف شد'});
+        if(res === false){return}
+        let {items,selected_credit_card} = this.state;
+        items = items.filter((o)=>o.id !== id);
+        if(!items.length){
+            this.setState({items,selected_credit_card:false})
+        }
+        else{
+            if(!items.find(({id})=>id === selected_credit_card)){
+                this.setState({items,selected_credit_card:items[0].id})
+            }
+        }
+        
+    }
     card_layout({ name,number,id },index) {
-        let {selected_credit_card,SetState} = this.context;
+        let {SetState} = this.context;
+        let {selected_credit_card} = this.state;
         let active = id === selected_credit_card;
         return {
             onClick:()=>SetState({selected_credit_card:id}),
@@ -575,7 +767,7 @@ class HesabHayeMan extends Component {
                 {size:60,html:(
                     <Icon path={active?mdiCheckboxMarked:mdiCheckboxBlankOutline} size={1}/>
                 ),align:'vh',style:{color:active?'dodgerblue':'#333'}},
-                {size:280,html:<CreditCard index={index} number={number} name={name}/>,className:'of-visible'},
+                {size:280,html:<CreditCard onRemove={()=>this.remove(id)} index={index} number={number} name={name}/>,className:'of-visible'},
                 {flex:1}
             ]
         }
@@ -602,7 +794,7 @@ class HesabHayeMan extends Component {
                                     ]
                                 }),
                                 { size: 12 },
-                                layout('add_button',{text:'افزودن حساب جدید'}),
+                                layout('add_button',{text:'افزودن حساب جدید',onClick:()=>this.addPopup()}),
                                 {size:12},
                                 layout('list_header',{text:'حساب های من',length:items.length}),
                                 this.cards_layout(),
@@ -615,7 +807,55 @@ class HesabHayeMan extends Component {
         )
     }
 }
+function GlossPopupLayout(type, parameter) {
+    if(type === 'input'){
+        return {
+            column:[
+                {html:parameter.label},
+                {html:(<input type={parameter.type} value={parameter.value} onChange={parameter.onChange} onClick={parameter.onClick}/>)},
+                {size:12},
+            ]
+        }
+    }
+    if(type === 'icon_button'){return <Icon path={parameter} size={1} className='icon-button'/>}
+    if(type === 'header'){
+        return {size:120,align:'vh',html:parameter}
+    }
+    if(type === 'label'){
+        return {
+            childsProps:{align:'v'},
+            className:'m-h-36 m-b-12 fs-14',
+            row:[
+                {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1},
+                {size:6},
+                {html:parameter},
+                {size:6},
+                {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1},
+                
+            ]
+        }
+    }
+    
+}
 function layout(type, parameter) {
+    if(type === 'gloss_popup_icon_button'){return <Icon path={parameter} size={1} className='icon-button'/>}
+    if(type === 'gloss_popup_header'){
+        return {size:120,align:'vh',html:parameter}
+    }
+    if(type === 'gloss_popup_label'){
+        return {
+            childsProps:{align:'v'},
+            className:'m-h-36 m-b-12 fs-14',
+            row:[
+                {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1},
+                {size:6},
+                {html:parameter},
+                {size:6},
+                {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1},
+                
+            ]
+        }
+    }
     if (type === 'list_header') {
         let { text, length } = parameter;
         return {

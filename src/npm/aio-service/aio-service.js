@@ -45,7 +45,7 @@ function AIOServiceShowAlert(obj = {}){
       $('.' + dui).remove()
   }})
 }
-export default function services({getState,apis,token,loader,baseUrl}) {
+export default function services({getState,apis,token,loader,baseUrl,onError,onSuccess}) {
   function getDateAndTime(value){
     let dateCalculator = AIODate();
     let adate,atime;
@@ -66,7 +66,7 @@ export default function services({getState,apis,token,loader,baseUrl}) {
   if(token){
     Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
-  return Service(apis({Axios,getState,getDateAndTime,arabicToFarsi,token,AIOServiceShowAlert,baseUrl}),loader)
+  return Service(apis({Axios,getState,getDateAndTime,arabicToFarsi,token,AIOServiceShowAlert,baseUrl}),loader,onError,onSuccess)
 }
 
 function AIOServiceLoading(id){
@@ -85,7 +85,7 @@ function AIOServiceLoading(id){
   `)
 }
 
-function Service(services,loader) {
+function Service(services,loader,onError,onSuccess) {
   function getFromCache(key, minutes) {
     if (minutes === true) { minutes = Infinity }
     let storage = localStorage.getItem(key);
@@ -104,7 +104,8 @@ function Service(services,loader) {
     if(!loading.length){loading = $('.aio-service-loading')}
     loading.remove()
   }
-  return async ({ api,callback, parameter, loading = true, cache, cacheName,def,validation,loadingParent = 'body' }) => {
+  return async (obj) => {
+    let { api,callback, parameter, loading = true, cache, cacheName,def,validation,loadingParent = 'body'} = obj
     let loadingId;
     if (loading) {
       loadingId = 'b' + Math.random()
@@ -139,6 +140,13 @@ function Service(services,loader) {
       }
     }
     if(callback){callback(result)}
+    if(!!onError && typeof result === 'string'){
+      onError(result,obj);
+      return def;
+    }
+    if(!!onSuccess){
+      onSuccess(result,obj);
+    }
     return result;
   }
 }
