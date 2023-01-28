@@ -1,3 +1,9 @@
+import axios from "axios"
+
+
+//let res = await axios.get(url);
+//let res = await axios.post(url,body);
+
 export default function apis({getState}){
     return {
         async gems(){
@@ -116,7 +122,10 @@ export default function apis({getState}){
             ]
           },
           async hazfe_hesab(id){
+            //اگر حذف موفقیت آمیز بود ریترن ترو
             return true
+            
+            //اگر خطایی رخ داد ریترن متن خطا
             //return 'خطایی رخ داد'
           }
     }
