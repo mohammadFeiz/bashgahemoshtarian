@@ -45,7 +45,7 @@ function AIOServiceShowAlert(obj = {}){
       $('.' + dui).remove()
   }})
 }
-export default function services({getState,apis,token,loader,baseUrl,onError,onSuccess}) {
+export default function services({getState,apis,token,loader,baseUrl}) {
   function getDateAndTime(value){
     let dateCalculator = AIODate();
     let adate,atime;
@@ -66,7 +66,7 @@ export default function services({getState,apis,token,loader,baseUrl,onError,onS
   if(token){
     Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
-  return Service(apis({Axios,getState,getDateAndTime,arabicToFarsi,token,AIOServiceShowAlert,baseUrl}),loader,onError,onSuccess)
+  return Service(apis({Axios,getState,getDateAndTime,arabicToFarsi,token,AIOServiceShowAlert,baseUrl}),loader)
 }
 
 function AIOServiceLoading(id){
@@ -85,7 +85,7 @@ function AIOServiceLoading(id){
   `)
 }
 
-function Service(services,loader,onError,onSuccess) {
+function Service(services,loader) {
   function getFromCache(key, minutes) {
     if (minutes === true) { minutes = Infinity }
     let storage = localStorage.getItem(key);
@@ -105,7 +105,7 @@ function Service(services,loader,onError,onSuccess) {
     loading.remove()
   }
   return async (obj) => {
-    let { api,callback, parameter, loading = true, cache, cacheName,def,validation,loadingParent = 'body'} = obj
+    let { api,callback, parameter, loading = true, cache, cacheName,def,validation,loadingParent = 'body',errorMessage,successMessage,types = []} = obj
     let loadingId;
     if (loading) {
       loadingId = 'b' + Math.random()
@@ -140,12 +140,33 @@ function Service(services,loader,onError,onSuccess) {
       }
     }
     if(callback){callback(result)}
-    if(!!onError && typeof result === 'string'){
-      onError(result,obj);
+    if(types.length){
+      let isMatch = false;
+      for(let i = 0; i < types.length; i++){
+        let type = types[i];
+        let Type = typeof result;
+        if(type === true && result === true){isMatch = true; break;}
+        if(type === 'boolean' && Type === 'boolean'){isMatch = true; break;}
+        if(type === 'array' && Array.isArray(result)){isMatch = true; break;}
+        if(type === 'object' && !Array.isArray(result) && Type === 'object'){isMatch = true; break;}
+        if(type === 'undefined' && Type === 'undefined'){isMatch = true; break;}
+        if(type === 'string' && Type === 'string'){isMatch = true; break;}
+        if(type === 'number' && Type === 'number'){isMatch = true; break;}
+        if(type === 'function' && Type === 'function'){isMatch = true; break;}
+      }
+      if(!isMatch){
+        AIOServiceShowAlert({type:'error',text:`apis().${api}`,subtext:`should return ${types.join(' or ')}`});
+        return def;
+      }
+    }
+    if(typeof result === 'string' && errorMessage){
+      AIOServiceShowAlert({type:'error',text:typeof errorMessage === 'function'?errorMessage():errorMessage,subtext:result});
       return def;
     }
-    if(!!onSuccess){
-      onSuccess(result,obj);
+    if(successMessage){
+      successMessage = typeof successMessage === 'function'?successMessage():successMessage
+      if(!Array.isArray(successMessage)){successMessage = [successMessage]}
+      AIOServiceShowAlert({type:'success',text:successMessage[0],subtext:successMessage[1]});
     }
     return result;
   }
