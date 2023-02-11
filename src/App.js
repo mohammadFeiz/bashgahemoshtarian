@@ -2,6 +2,7 @@ import React,{Component} from 'react';
 import RSA from './npm/react-super-app/react-super-app';
 import AIOService from './npm/aio-service/aio-service';
 import apis from './apis';
+import Axios from 'axios';
 import {Icon} from '@mdi/react';
 import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet} from '@mdi/js';
 import Javayez from './pages/javayez/javayez';
@@ -14,7 +15,45 @@ import gemSrc from './images/gem.gif';
 import './App.css';
 import RVD from './npm/react-virtual-dom/react-virtual-dom';
 import AIOStorage from './npm/aio-storage/aio-storage'
+import {OTPLogin} from './npm/aio-login/aio-login';
 export default class App extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      isAutenticated:false,registered:false
+    }
+  }
+  async onInterNumber(number){
+    let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactoauth', { Mobile: number })
+    if (res.data.isSuccess) {
+      debugger
+    }
+    else {
+      return alert(res.data.Message);
+    }
+  }
+  onInterCode(code){
+
+  }
+  onInterPassword(number, password){
+
+  }
+  render(){
+    let {isAutenticated,token} = this.state;
+    if(isAutenticated){
+      return <Main token={token}/>
+    }
+    return (
+      <OTPLogin
+        time={30}
+        onInterNumber={(number) => this.onInterNumber(number)}
+        onInterCode={(code) => this.onInterCode(code)}
+        onInterPassword={(number, password) => this.onInterPassword(number, password)}
+      />
+    )
+  }
+}
+class Main extends Component{
   constructor(props){
     super(props);
     let Storage = AIOStorage('bashgah-storage')
