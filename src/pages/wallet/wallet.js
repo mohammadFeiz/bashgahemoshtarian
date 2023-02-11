@@ -741,7 +741,12 @@ class HesabHayeMan extends Component {
     }
     async remove(id){
         let {apis} = this.context;
-        let res = await apis({api:'hazfe_hesab',parameter:id,def:false,errorTitle:'حساب شما حذف نشد',successTitle:'حساب شما با موفقیت حذف شد'});
+        let res = await apis({
+            api:'hazfe_hesab',parameter:id,def:false,
+            types:[true,'string'],
+            errorMessage:'حساب شما حذف نشد',
+            successMessage:['حساب شما با موفقیت حذف شد','تبریک میگم']
+        });
         if(res === false){return}
         let {items,selected_credit_card} = this.state;
         items = items.filter((o)=>o.id !== id);

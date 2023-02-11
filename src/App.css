@@ -1,5 +1,6 @@
 body{
   direction:rtl;
+  font-family: 'IRANSans-light';
 }
 button,input{
   font-family:inherit;
