@@ -1,18 +1,36 @@
 import axios from "axios"
 
 
-//let res = await axios.get(url);
-//let res = await axios.post(url,body);
+// let res = await axios.get(url);
+// let res = await axios.post(url,body);
 
 export default function apis({ getState }) {
   return {
-    async gems({ phoneNumber }) {
-      let res = await axios.get('www.club.com', { phoneNumber: phoneNumber })
+    async twofactoauth({ mobile }) {
+      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactoauth', { Mobile: mobile })
       if (res.data.isSuccess) {
-        return res.data.gems;
+        return res.data.Message;
       }
       else {
-        return res.data.message
+        return res.data.Message;
+      }
+    },
+    async twofactoauthconfirm({ mobile }) {
+      let res = await axios.get('http://10.10.10.22:8081/sso/api/v1/user/twofactoauthconfirm', { mobile: mobile })
+      if (res.data.isSuccess) {
+        return res.data[0].Balance;
+      }
+      else {
+        return 0
+      }
+    },
+    async gems({ mobile }) {
+      let res = await axios.get('http://10.10.10.22:8081/wallet/api/v1/User/Wallet/Balance', { mobile: mobile })
+      if (res.data.isSuccess) {
+        return res.data[0].Balance;
+      }
+      else {
+        return 0
       }
     },
     async history() {
