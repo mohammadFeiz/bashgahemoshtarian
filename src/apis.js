@@ -7,7 +7,7 @@ import axios from "axios"
 export default function apis({ getState }) {
   return {
     async twofactoauth({ mobile }) {
-      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactoauth', { Mobile: mobile })
+      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: mobile })
       if (res.data.isSuccess) {
         return true;
       }
@@ -17,7 +17,7 @@ export default function apis({ getState }) {
     },
     async twofactoauthconfirm({ mobile,code,firstName,lastName }) {
       let res = await axios.post(
-        'http://10.10.10.22:8081/sso/api/v1/user/twofactoauthconfirm', 
+        'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
         { mobile: mobile,OtpCode:code,FirstName:firstName,LastName:lastName }
       )
       if (res.data.isSuccess) {
