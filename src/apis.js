@@ -6,27 +6,6 @@ import axios from "axios"
 
 export default function apis({ getState }) {
   return {
-    async twofactoauth({ mobile }) {
-      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: mobile })
-      if (res.data.isSuccess) {
-        return true;
-      }
-      else {
-        return res.data.Message;
-      }
-    },
-    async twofactoauthconfirm({ mobile,code,firstName,lastName }) {
-      let res = await axios.post(
-        'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
-        { mobile: mobile,OtpCode:code,FirstName:firstName,LastName:lastName }
-      )
-      if (res.data.isSuccess) {
-        return res.data[0].Balance;
-      }
-      else {
-        return 'دریافت کیف پول با مشکل مواجه شد'
-      }
-    },
     async gems({ mobile }) {
       let res = await axios.get('http://10.10.10.22:8081/wallet/api/v1/User/Wallet/Balance', { mobile: mobile })
       if (res.data.isSuccess) {

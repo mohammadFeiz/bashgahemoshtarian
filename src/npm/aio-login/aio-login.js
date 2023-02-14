@@ -57,7 +57,7 @@ export class OTPLogin extends Component{
     }
     render(){
       let {mode,number,error,exactNumber} = this.state;
-      let {time} = this.props;
+      let {time,codeLength = 4} = this.props;
       return (
         <RVD
           layout={{
@@ -79,6 +79,7 @@ export class OTPLogin extends Component{
                 show:mode === 'inter-code',align:'h',
                 html:()=>(
                   <CodeForm 
+                    codeLength={codeLength}
                     number={number}
                     time={time}
                     getDelta={this.getDelta.bind(this)}
@@ -301,21 +302,22 @@ export class OTPLogin extends Component{
     }
     input_layout(){
       let {code} = this.state;
+      let {codeLength} = this.props;
       return {
         style:{padding:'0 12px'},
         html: (
           <div className='otp-login-input'>
-            <input className='otp-login-code' type='number' value={code} onChange={(e) => this.onChange(e.target.value)} maxLength={4} placeholder='- - - -'/>
+            <input className='otp-login-code' type='number' value={code} onChange={(e) => this.onChange(e.target.value)} maxLength={codeLength} placeholder='- - - -'/>
           </div>
         )
       }
     }
     submit_layout(){
-      let {onSubmit} = this.props;
+      let {onSubmit,codeLength} = this.props;
       let {code} = this.state;
       return {
         style:{padding:'0 12px'},
-        html: (<SubmitButton disabled={isNaN(+code) || code.length !== 4} onClick={async () => await onSubmit(code)}/>)
+        html: (<SubmitButton disabled={isNaN(+code) || code.length !== codeLength} onClick={async () => await onSubmit(code)}/>)
       }
     }
     update(){
@@ -329,7 +331,8 @@ export class OTPLogin extends Component{
       }
     }
     onChange(code){
-      if (code.length > 4) { return }
+      let {codeLength} = this.props;
+      if (code.length > codeLength) { return }
       this.setState({code});
     }
     remainingTime_layout(){

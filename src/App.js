@@ -20,20 +20,40 @@ export default class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      isAutenticated:false,registered:false
+      isAutenticated:false,registered:false,number:'',firstName:'',lastName:''
     }
   }
   async onInterNumber(number){
-    let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactoauth', { Mobile: number })
-    if (res.data.isSuccess) {
-      debugger
+    let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: number })
+    if (res.data.IsSuccess) {
+      debugger;
+      this.setState({number})
+      return true
     }
     else {
       return alert(res.data.Message);
     }
   }
-  onInterCode(code){
-
+  async onInterCode(code){
+    let {number,registered} = this.state;
+    let firstName = '',lastName = '';
+    if(!registered){
+      while(typeof firstName !== 'string' || firstName.length < 3){
+        firstName = window.prompt('نام کاربر','نام خود را وارد کنید');
+        lastName = window.prompt('نام خانوادگی کاربر','نام خانوادگی خود را وارد کنید');
+      }
+    }
+    debugger;
+    let res = await Axios.post(
+      'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
+      { mobile: number,OtpCode:+code,FirstName:firstName,LastName:lastName }
+    )
+    if (res.data.isSuccess) {
+      //return res.data[0].Balance;
+    }
+    else {
+      return 'دریافت کیف پول با مشکل مواجه شد'
+    }
   }
   onInterPassword(number, password){
 
@@ -46,6 +66,7 @@ export default class App extends Component{
     return (
       <OTPLogin
         time={30}
+        codeLength={5}
         onInterNumber={(number) => this.onInterNumber(number)}
         onInterCode={(code) => this.onInterCode(code)}
         onInterPassword={(number, password) => this.onInterPassword(number, password)}
