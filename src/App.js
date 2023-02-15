@@ -19,15 +19,18 @@ import {OTPLogin} from './npm/aio-login/aio-login';
 export default class App extends Component{
   constructor(props){
     super(props);
+    this.tokenStorage = AIOStorage('bashgak-token');
+    let token = this.tokenStorage.load('token',false);
+    let isAutenticated = false;
+    if(token){isAutenticated = true}
     this.state = {
-      isAutenticated:false,registered:false,number:'',firstName:'',lastName:''
+      isAutenticated,registered:true,number:'',firstName:'',lastName:'',email:'',token
     }
   }
   async onInterNumber(number){
     let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: number })
     if (res.data.IsSuccess) {
-      debugger;
-      this.setState({number})
+      this.setState({number,registered:!!res.data.Data.Status})
       return true
     }
     else {
@@ -36,20 +39,27 @@ export default class App extends Component{
   }
   async onInterCode(code){
     let {number,registered} = this.state;
-    let firstName = '',lastName = '';
+    let firstName = '',lastName = '',email = '';
+    debugger;
     if(!registered){
-      while(typeof firstName !== 'string' || firstName.length < 3){
+      while(typeof firstName !== 'string' || firstName.length < 2){
         firstName = window.prompt('نام کاربر','نام خود را وارد کنید');
+      }
+      while(typeof lastName !== 'string' || lastName.length < 2){
         lastName = window.prompt('نام خانوادگی کاربر','نام خانوادگی خود را وارد کنید');
       }
+      while(typeof email !== 'string' || !email){
+        email = window.prompt('ایمیل کاربر','آدرس ایمیل خود را وارد کنید');
+      }
     }
-    debugger;
     let res = await Axios.post(
       'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
-      { mobile: number,OtpCode:+code,FirstName:firstName,LastName:lastName }
+      { mobile: number,OtpCode:code,FirstName:firstName,LastName:lastName,Email:email }
     )
-    if (res.data.isSuccess) {
-      //return res.data[0].Balance;
+    if (res.data.IsSuccess) {
+      let token = res.data.Data.access_token;
+      this.tokenStorage.save(token,'token');
+      this.setState({token,isAutenticated:true})
     }
     else {
       return 'دریافت کیف پول با مشکل مواجه شد'
