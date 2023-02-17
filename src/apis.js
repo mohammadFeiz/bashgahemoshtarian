@@ -6,8 +6,9 @@ import axios from "axios"
 
 export default function apis({ getState }) {
   return {
-    async gems({ mobile }) {
-      let res = await axios.get('http://10.10.10.22:8081/wallet/api/v1/User/Wallet/Balance', { mobile: mobile })
+    async gems() {
+      let { mobile } = getState();
+      let res = await axios.post('http://10.10.10.22:8081/wallet/api/v1/User/wallet/balance', { mobile: mobile })
       if (res.data.isSuccess) {
         return res.data[0].Balance;
       }

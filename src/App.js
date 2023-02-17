@@ -59,6 +59,7 @@ export default class App extends Component{
     if (res.data.IsSuccess) {
       let token = res.data.Data.access_token;
       this.tokenStorage.save(token,'token');
+      this.tokenStorage.save(number,'mobile');
       this.setState({token,isAutenticated:true})
     }
     else {
@@ -71,7 +72,12 @@ export default class App extends Component{
   render(){
     let {isAutenticated,token} = this.state;
     if(isAutenticated){
-      return <Main token={token}/>
+      let mobile = this.tokenStorage.load('mobile')
+      while(typeof mobile !== 'string' || mobile.length < 11){
+        mobile = window.prompt('شماره همراه کاربر','شماره همراه خود را وارد کنید');
+      }
+      this.tokenStorage.save(mobile,'mobile');
+      return <Main token={token} mobile={mobile}/>
     }
     return (
       <OTPLogin
@@ -89,8 +95,9 @@ class Main extends Component{
     super(props);
     let Storage = AIOStorage('bashgah-storage')
     this.state = {
-      apis:AIOService({apis,getState:()=>this.state,onError:this.onError.bind(this),onSuccess:this.onSuccess.bind(this)}),
+      apis:AIOService({apis,getState:()=>this.state,onError:this.onError.bind(this),onSuccess:this.onSuccess.bind(this),token:props.token}),
       Storage,
+      mobile:props.mobile,
       gems:0,
       history:[],
       details:[],
@@ -132,8 +139,8 @@ class Main extends Component{
     })
   }
   async getGems(){
-    const {apis} = this.state;
-    let gems = await apis({api:'gems'});
+    const {apis,mobile} = this.state;
+    let gems = await apis({api:'gems',parameter:{mobile}});
     this.setState({gems})
   }
   async getHistory(){
