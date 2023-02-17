@@ -4,7 +4,7 @@ import AIOService from './npm/aio-service/aio-service';
 import apis from './apis';
 import Axios from 'axios';
 import {Icon} from '@mdi/react';
-import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet} from '@mdi/js';
+import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet, mdiAccountBoxOutline, mdiEmailOutline} from '@mdi/js';
 import Javayez from './pages/javayez/javayez';
 import ShakhesHa from './pages/shakhes-ha/shakhes-ha';
 import Khane from './pages/khane/khane';
@@ -24,37 +24,26 @@ export default class App extends Component{
     let isAutenticated = false;
     if(token){isAutenticated = true}
     this.state = {
-      isAutenticated,registered:true,number:'',firstName:'',lastName:'',email:'',token
+      isAutenticated,registered:true,token
     }
   }
   async onInterNumber(number){
     let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: number })
+    console.log('onInterNumber',res);
     if (res.data.IsSuccess) {
-      this.setState({number,registered:!!res.data.Data.Status})
+      this.setState({registered:!!res.data.Data.Status})
       return true
     }
     else {
       return alert(res.data.Message);
     }
   }
-  async onInterCode(code){
-    let {number,registered} = this.state;
-    let firstName = '',lastName = '',email = '';
+  async onInterCode({number,code,FirstName,LastName,Email}){
     debugger;
-    if(!registered){
-      while(typeof firstName !== 'string' || firstName.length < 2){
-        firstName = window.prompt('نام کاربر','نام خود را وارد کنید');
-      }
-      while(typeof lastName !== 'string' || lastName.length < 2){
-        lastName = window.prompt('نام خانوادگی کاربر','نام خانوادگی خود را وارد کنید');
-      }
-      while(typeof email !== 'string' || !email){
-        email = window.prompt('ایمیل کاربر','آدرس ایمیل خود را وارد کنید');
-      }
-    }
+    code = code.toString();
     let res = await Axios.post(
       'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
-      { mobile: number,OtpCode:code,FirstName:firstName,LastName:lastName,Email:email }
+      { mobile: number,OtpCode:code,FirstName,LastName,Email }
     )
     if (res.data.IsSuccess) {
       let token = res.data.Data.access_token;
@@ -66,26 +55,31 @@ export default class App extends Component{
       return 'دریافت کیف پول با مشکل مواجه شد'
     }
   }
-  onInterPassword(number, password){
+  onInterPassword({number, password}){
 
   }
   render(){
-    let {isAutenticated,token} = this.state;
+    let {isAutenticated,token,registered} = this.state;
     if(isAutenticated){
-      let mobile = this.tokenStorage.load('mobile')
-      while(typeof mobile !== 'string' || mobile.length < 11){
-        mobile = window.prompt('شماره همراه کاربر','شماره همراه خود را وارد کنید');
-      }
-      this.tokenStorage.save(mobile,'mobile');
-      return <Main token={token} mobile={mobile}/>
+      return <Main token={token} mobile={this.tokenStorage.load('mobile')}/>
+    }
+    let fields = [];
+    if(!registered){
+      fields = [
+        {label:'نام',field:'FirstName',type:'text',validations:[['required']],prefix:<Icon path={mdiAccountBoxOutline} size={1}/>},
+        {label:'نام خانوادگی',field:'LastName',type:'text',validations:[['required']],prefix:<Icon path={mdiAccountBoxOutline} size={1}/>},
+        {label:'ایمیل',field:'Email',type:'text',validations:[['required']],prefix:<Icon path={mdiEmailOutline} size={1}/>},
+      ]
     }
     return (
       <OTPLogin
         time={30}
+        verifiedCode={'1234'}
+        fields={fields}
         codeLength={5}
         onInterNumber={(number) => this.onInterNumber(number)}
-        onInterCode={(code) => this.onInterCode(code)}
-        onInterPassword={(number, password) => this.onInterPassword(number, password)}
+        onInterCode={(obj) => this.onInterCode(obj)}
+        //onInterPassword={(obj) => this.onInterPassword(obj)}
       />
     )
   }
@@ -140,7 +134,7 @@ class Main extends Component{
   }
   async getGems(){
     const {apis,mobile} = this.state;
-    let gems = await apis({api:'gems',parameter:{mobile}}) || 5000;
+    let gems = await apis({api:'gems',parameter:{mobile}});
     this.setState({gems})
   }
   async getHistory(){

@@ -7,10 +7,9 @@ import axios from "axios"
 export default function apis({ getState }) {
   return {
     async gems() {
-      let { mobile } = getState();
-      let res = await axios.post('http://10.10.10.22:8081/wallet/api/v1/User/wallet/balance', { mobile: mobile })
-      if (res.data.isSuccess) {
-        return res.data[0].Balance;
+      let res = await axios.get('http://10.10.10.22:8081/wallet/api/v1/User/wallet/balance')
+      if (res.data.IsSuccess) {
+        return res.data.Data[0].Balance;
       }
       else {
         return 'دریافت میزان الماس کاربر با مشکل مواجه شد'
