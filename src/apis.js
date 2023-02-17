@@ -134,6 +134,49 @@ export default function apis({ getState }) {
 
       //اگر خطایی رخ داد ریترن متن خطا
       //return 'خطایی رخ داد'
+    },
+    async daryafte_liste_tarakonesh_ha(){
+      //ریترن آرایه ای از تراکنش ها با فرمت زیر
+      // [
+      //   { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+      //   { success: false, status: { type: 'تبدیل الماس به ریال', to: 40000, gems: 20 }, date: '1401/4/5', time: '10:30' },
+      //   { success: true, status: { type: 'خرید الماس', to: 180000, gems: 500 }, date: '1401/4/5', time: '10:30' },
+      //   { success: true, status: { type: 'دریافت الماس', to: 'علی واحدی', gems: 250 }, date: '1401/4/5', time: '10:30' },
+      //   { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+      // ]
+      //در صورت خطا ریترن متن خطا
+      return 'خطایی رخ داد'
+      return [
+        { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+        { success: false, status: { type: 'تبدیل الماس به ریال', to: 40000, gems: 20 }, date: '1401/4/5', time: '10:30' },
+        { success: true, status: { type: 'خرید الماس', to: 180000, gems: 500 }, date: '1401/4/5', time: '10:30' },
+        { success: true, status: { type: 'دریافت الماس', to: 'علی واحدی', gems: 250 }, date: '1401/4/5', time: '10:30' },
+        { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
+      ]
+    },
+    async jostojooye_girandeye_almas(searchValue){
+      //ریترن آرایه ای از گیرندگان با فرمت زیر
+      //{name:'محمد فیض',phone:'09123534314',id:'1'}
+      //در صورت خطا ریترن متن خطا
+      return [
+        {name:'محمد فیض',phone:'09123534314',id:'1'},
+        {name:'محمد فیض',phone:'09123534314',id:'2'},
+        {name:'محمد فیض',phone:'09123534314',id:'3'},
+        {name:'محمد فیض',phone:'09123534314',id:'4'},
+        {name:'محمد فیض',phone:'09123534314',id:'5'},
+        {name:'محمد فیض',phone:'09123534314',id:'6'},
+        {name:'محمد فیض',phone:'09123534314',id:'7'},
+        {name:'محمد فیض',phone:'09123534314',id:'8'},
+        {name:'محمد فیض',phone:'09123534314',id:'9'},
+        {name:'محمد فیض',phone:'09123534314',id:'10'},
+      ]
+    },
+    async enteghale_almas({password,tedade_almas_jahate_enteghal,girande}){
+      //در صورت خطا ریترن متن خطا
+      //در صورت موفقیت ریترن ترو
+      
+      //return 'خطایی رخ داده است'
+      return true
     }
   }
 }

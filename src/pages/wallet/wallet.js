@@ -7,8 +7,9 @@ import CreditCard from './../../components/credit-card/credit-card';
 import Form from './../../npm/aio-form-react/aio-form-react';
 import { splitNumber } from './../../npm/react-super-app/react-super-app';
 import { Icon } from "@mdi/react";
-import { mdiArrowULeftTopBold, mdiCheckbook, mdiCheckboxBlank, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiClose, mdiDiamond, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiArrowULeftTopBold, mdiCheckbook, mdiCheckboxBlank, mdiCheckboxBlankOutline, mdiCheckboxMarked, mdiClose, mdiDiamond, mdiPlusBoxOutline,mdiLoading } from '@mdi/js';
 import AppContext from "../../app-context";
+import $ from 'jquery';
 import './wallet.css';
 export default class Wallet extends Component {
     static contextType = AppContext;
@@ -244,21 +245,28 @@ class TarakonesheAlmas extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            items: [
-                { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
-                { success: false, status: { type: 'تبدیل الماس به ریال', to: 40000, gems: 20 }, date: '1401/4/5', time: '10:30' },
-                { success: true, status: { type: 'خرید الماس', to: 180000, gems: 500 }, date: '1401/4/5', time: '10:30' },
-                { success: true, status: { type: 'دریافت الماس', to: 'علی واحدی', gems: 250 }, date: '1401/4/5', time: '10:30' },
-                { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
-            ],
+            items: [],
             tedade_almas_jahate_enteghal:0
         }
+    }
+    async update(){
+        let {apis} = this.context;
+        let res = await apis({
+            api:'daryafte_liste_tarakonesh_ha',
+            errorMessage:'دریافت لیست تراکنش ها با خطا روبرو شد'
+        });
+        if(Array.isArray(res)){
+            this.setState({items:res})
+        }
+    }
+    componentDidMount(){
+        this.update()
     }
     addPopup(){
         let {rsa_actions} = this.context;
         rsa_actions.addPopup({
             header:false,
-            body:()=><EnteghaleAlmas/>
+            body:()=><EnteghaleAlmas onSuccess={()=>this.update()}/>
         })
     }
     cards_layout() {
@@ -339,21 +347,66 @@ class EnteghaleAlmas extends Component{
     static contextType = AppContext;
     state = {
         tedade_almas_jahate_enteghal:0,searchValue:'',girande:false,
-        searchResult:[
-            {name:'محمد فیض',phone:'09123534314',id:'1'},
-            {name:'محمد فیض',phone:'09123534314',id:'2'},
-            {name:'محمد فیض',phone:'09123534314',id:'3'},
-            {name:'محمد فیض',phone:'09123534314',id:'4'},
-            {name:'محمد فیض',phone:'09123534314',id:'5'},
-            {name:'محمد فیض',phone:'09123534314',id:'6'},
-            {name:'محمد فیض',phone:'09123534314',id:'7'},
-            {name:'محمد فیض',phone:'09123534314',id:'8'},
-            {name:'محمد فیض',phone:'09123534314',id:'9'},
-            {name:'محمد فیض',phone:'09123534314',id:'10'},
-        ]
+        searchResult:undefined
     }
     iconButton(path){
         return <Icon path={path} size={1} className='icon-button'/>
+    }
+    async onSubmit(){
+        let {password,tedade_almas_jahate_enteghal,girande} = this.state;
+        let {apis} = this.context;
+        let res = await apis({
+            api:'enteghale_almas',
+            parameter:{password,tedade_almas_jahate_enteghal,girande},
+            errorMessage:'انتقال الماس با خطا مواجه شد',
+            successMessage:'انتقال الماس با موفقیت انجام شد'
+        })
+        if(res === true){
+            let {rsa_actions} = this.context;
+            rsa_actions.removePopup()
+        }
+    }
+    search(searchValue){
+        this.setState({searchValue,searchResult:'searching'});
+        clearTimeout(this.timeout);
+        this.timeout = setTimeout(async ()=>{
+            let {apis} = this.context;
+            let res = await apis({api:'jostojooye_girandeye_almas',parameter:searchValue});
+            this.setState({searchResult:res})
+        },1000)
+    }
+    searchResult_layout(){
+        let {searchResult,searchValue} = this.state;
+        if(searchResult === 'searching'){
+            return {
+                flex:1,align:'vh',
+                html:<Icon path={mdiLoading} size={1.5} spin={0.5}/>
+            }
+        }
+        if(Array.isArray(searchResult) && searchValue){
+            if(!searchResult.length){
+                return {
+                    flex:1,align:'vh',html:'شخصی مطابق با جستجوی شما پیدا نشد'
+                }
+            }
+            return {
+                flex:1,
+                className:'m-h-24 of-auto',
+                column:searchResult.map((o)=>{
+                    let {name,phone} = o;
+                    return {
+                        size:48,align:'v',
+                        onClick:()=>this.setState({girande:o}),
+                        style:{background:'rgba(255,255,255,0.1)',marginBottom:6,padding:'0 12px'},
+                        column:[
+                            {html:name,className:'fs-14 bold'},
+                            {html:phone,className:'fs-12'}
+                        ]
+                    }
+                })
+            }
+        }
+        return {flex:1}
     }
     page1_layout(){
         let {saghfe_enteghale_almas,rsa_actions} = this.context;
@@ -364,9 +417,13 @@ class EnteghaleAlmas extends Component{
             column:[
                 layout('gloss_popup_label','تعداد الماس جهت انتقال را وارد کنید'),
                 {
+                    align:'vh',
                     html:(
                         <input 
-                            type='number' value={tedade_almas_jahate_enteghal} 
+                            type='number' value={tedade_almas_jahate_enteghal}
+                            onClick={(e)=>{
+                                $(e.target).focus().select()
+                            }}
                             onChange={(e)=>this.setState({tedade_almas_jahate_enteghal:e.target.value})}
                         />
                     )
@@ -376,31 +433,26 @@ class EnteghaleAlmas extends Component{
                     html:`تا سقف ${saghfe_enteghale_almas} الماس روزانه`,align:'vh'
                 },
                 {size:36},
-                layout('gloss_popup_label','جستجوی گیرنده الماس'),
                 {
-                    html:(
-                        <input 
-                            type='text' value={searchValue} 
-                            onChange={(e)=>this.setState({searchValue:e.target.value})}
-                        />
-                    )
+                    show:!!!tedade_almas_jahate_enteghal,flex:1,
                 },
-                {size:12},
                 {
+                    show:!!tedade_almas_jahate_enteghal,
                     flex:1,
-                    className:'m-h-24 of-auto',
-                    column:searchResult.map((o)=>{
-                        let {name,phone,id} = o;
-                        return {
-                            size:48,align:'v',
-                            onClick:()=>this.setState({girande:o}),
-                            style:{background:'rgba(255,255,255,0.1)',marginBottom:6,padding:'0 12px'},
-                            column:[
-                                {html:name,className:'fs-14 bold'},
-                                {html:phone,className:'fs-12'}
-                            ]
-                        }
-                    })
+                    column:[
+                        layout('gloss_popup_label','جستجوی گیرنده الماس'),
+                        {
+                            align:'vh',
+                            html:(
+                                <input 
+                                    type='text' value={searchValue} 
+                                    onChange={(e)=>this.search(e.target.value)}
+                                />
+                            )
+                        },
+                        {size:12},
+                        this.searchResult_layout(),
+                    ]
                 },
                 {
                     size:96,align:'vh',html:this.iconButton(mdiClose),onClick:()=>rsa_actions.removePopup()
@@ -432,6 +484,7 @@ class EnteghaleAlmas extends Component{
                 layout('gloss_popup_label','در صورت تائید، رمز پرداخت را وارد نمائید'),
                 {size:12},
                 {
+                    align:'vh',
                     html:(
                         <input 
                             type='password' value={password} placeholder='رمز پرداخت 6 رقمی را وارد کنید'
@@ -448,10 +501,8 @@ class EnteghaleAlmas extends Component{
                 },
                 {size:36},
                 {
-                    align:'vh',className:'m-h-36',
-                    html:(
-                        <button>تایید</button>
-                    )
+                    show:!!password,align:'vh',className:'m-h-36',
+                    html:(<button onClick={()=>this.onSubmit()}>تایید</button>)
                 },
                 {flex:1},
                 {size:96,align:'vh',html:layout('gloss_popup_icon_button',mdiArrowULeftTopBold),onClick:()=>this.setState({girande:false})}

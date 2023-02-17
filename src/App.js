@@ -140,7 +140,7 @@ class Main extends Component{
   }
   async getGems(){
     const {apis,mobile} = this.state;
-    let gems = await apis({api:'gems',parameter:{mobile}});
+    let gems = await apis({api:'gems',parameter:{mobile}}) || 5000;
     this.setState({gems})
   }
   async getHistory(){
