@@ -176,6 +176,90 @@ export default function apis({ getState }) {
       
       //return 'خطایی رخ داده است'
       return true
+    },
+    async chalesh_haye_man(){
+      let time = new Date().getTime()
+      let chalesh_dic = {
+        'doing':{text:'در حال اجرا',color:'#1D87B4'},
+        'done':{text:'انجام شده',color:'#18B255'},
+        'notStarted':{text:'شروع نشده',color:'#DFAF02'},
+        'expired':{text:'منقضی شده',color:'#B21212'}
+      }
+      let chalesh_ha = [
+        {
+          name:'چالش فروش فوق العاده',
+          status:'doing',
+          text:'فروش 900.000.000 تومان تا پایان 2 اسفند 1401 ',
+          range:{
+            start:0,
+            end:900,
+            value:660,
+            unit:'میلیون تومان'
+          },
+          reward:{
+            gem:8000,
+            score:12000
+          },
+          date:time + 10000000
+        },
+        {
+          name:'چالش ویزیت',status:'doing',
+          text:'انجام 120 ویزیت در 7 روز',
+          range:{
+            start:0,
+            end:23,
+            value:120,
+            unit:'عدد'
+          },
+          reward:{
+            gem:12000,
+            score:800
+          },
+          date:time + 10000000
+        },
+        {
+          name:'چالش ثبت نام بازار می ارزه',
+          status:'notStarted',
+          text:'ثبت نام 200 کاربر (الکتریکی) در بازار می ارزه',
+          reward:{
+            gem:50000
+          },
+          date:time + 10000000
+        },
+        {
+          name:'چالش فروش 500 میلیون نقدی',
+          status:'done',
+          text:'فروش 500.000.000 تومان نقد تا 20 بهمن 1401',
+          range:{
+            start:0,
+            end:500,
+            value:500,
+            unit:'میلیون تومان'
+          },
+          reward:{
+            gem:12000,
+            score:800
+          },
+          date:time + 10000000
+        },
+        {
+          name:'چالش فروش 10 وات',
+          status:'expired',
+          text:'فروش 30 کارتن 10 وات در 2 روز',
+          range:{
+            start:0,
+            end:23,
+            value:120,
+            unit:'عدد'
+          },
+          reward:{
+            gem:12000,
+            score:800
+          },
+          date:time - 1000000
+        }
+      ]
+      return {chalesh_dic,chalesh_ha}
     }
   }
 }

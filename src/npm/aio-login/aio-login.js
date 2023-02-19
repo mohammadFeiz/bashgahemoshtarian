@@ -139,20 +139,19 @@ export class OTPLogin extends Component{
       }
     }
     title_layout(){
-      return { html: 'ورود | ثبت نام', className: 'otp-login-text1' }
-    }
-    subtitle_layout(){
       let {remainingTime,mode} = this.state;
+      let title = 'ورود | ثبت نام',subtitle;
       if(mode === 'otp'){
-        if(remainingTime){
-          return { html: `شماره تلفن همراه خود را پس از ${remainingTime} ثانیه وارد کنید`, className: 'otp-login-text2' }
-        }
-        else{
-          return {html:'شماره تلفن همراه خود را وارد کنید. پیامکی حاوی کد برای شما ارسال میشود',className:'otp-login-text2'}
-        }
+        if(remainingTime){subtitle = `شماره تلفن همراه خود را پس از ${remainingTime} ثانیه وارد کنید`}
+        else{subtitle = 'شماره تلفن همراه خود را وارد کنید. پیامکی حاوی کد برای شما ارسال میشود'}
       }
-      if(mode === 'password'){
-        return {html:'شماره تلفن همراه و رمز عبور را وارد کنید.',className:'otp-login-text2'}
+      if(mode === 'password'){subtitle = 'شماره تلفن همراه و رمز عبور را وارد کنید.'}
+      return {
+        column:[
+          { html: title, className: 'otp-login-text1' },
+          {html:subtitle,className:'otp-login-text2'},
+          {size:12}
+        ]
       }
     }
     getNumberError(){
@@ -177,20 +176,15 @@ export class OTPLogin extends Component{
       return {
         html:(
           <Form
-            lang='fa'
-            style={{direction:'ltr'}}
-            model={model}
-            onChange={(model)=>this.setState({model})}
+            lang='fa' model={model} style={{direction:'ltr'}} onChange={(model)=>this.setState({model})}
             inputs={[
               {
                 type:'text',field:'model.number',prefix:<Icon path={mdiCellphone} size={0.8}/>,placeholder:'09...',
-                label:'شماره همراه',disabled:!!exactNumber,
-                validations:[['function',()=>this.getNumberError()]]
+                label:'شماره همراه',disabled:!!exactNumber,validations:[['function',()=>this.getNumberError()]]
               },
               {
                 show:mode === 'password',type:'password',field:'model.password',prefix:<Icon path={mdiLock} size={0.8}/>,
-                label:'پسوورد',
-                validations:[['function',()=>this.getPasswordError()]]
+                label:'پسوورد',validations:[['function',()=>this.getPasswordError()]]
               }
             ]}
           />
@@ -244,9 +238,6 @@ export class OTPLogin extends Component{
                 className:'of-visible',
                 column: [
                   this.title_layout(),
-                  {size:12},
-                  this.subtitle_layout(),
-                  {size:12},
                   this.form_layout(),
                   this.submit_layout(),
                   {size:12},
@@ -268,7 +259,7 @@ export class OTPLogin extends Component{
       this.state = {recode:false,model}
       this.update();
     }
-    label_layout(){
+    title_layout(){
       let {number} = this.props;
       return {
         column:[
@@ -377,8 +368,7 @@ export class OTPLogin extends Component{
           layout={{
             className:'otp-login-form',
             column: [
-              this.label_layout(),
-              { size: 24 },
+              this.title_layout(),
               this.input_layout(),
               this.submit_layout(),
               this.remainingTime_layout(),
