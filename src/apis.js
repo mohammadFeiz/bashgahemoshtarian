@@ -122,9 +122,21 @@ export default function apis({ getState }) {
     },
     async details() {
       return [
-        { title: 'استمرار خرید', text: 'برای فاکتور های 4 تا 7 میلیون تومانی 15 امتیاز و بیشتر از 7 میلیون 42 امتیاز', max: 10, value: 3, labelStep: 1, affix: 'بار', mileStones: [2, 5, 7] },
-        { title: 'حجم خرید', text: 'به ازای هر یک میلیون تومان خرید 1/5 امتیاز ', max: 250, value: 85, labelStep: 50, affix: 'میلیون', mileStones: [50, 100, 200] },
-        { title: 'تنوع سبد خرید', text: 'برای فاکتور های 4 تا 7 میلیون تومانی 15 امتیاز و بیشتر از 7 میلیون 42 امتیاز', max: 20, value: 15, labelStep: 1, affix: 'قلم', mileStones: [7, 10, 15] },
+        { 
+          title: 'استمرار خرید', 
+          text: 'برای فاکتور های 4 تا 7 میلیون تومانی 15 امتیاز و بیشتر از 7 میلیون 42 امتیاز', 
+          max: 10, value: 3, labelStep: 1, affix: 'بار', mileStones: [2, 5, 7] 
+        },
+        { 
+          title: 'حجم خرید', 
+          text: 'به ازای هر یک میلیون تومان خرید 1/5 امتیاز ', 
+          max: 250, value: 85, labelStep: 50, affix: 'میلیون', mileStones: [50, 100, 200] 
+        },
+        { 
+          title: 'تنوع سبد خرید', 
+          text: 'برای فاکتور های 4 تا 7 میلیون تومانی 15 امتیاز و بیشتر از 7 میلیون 42 امتیاز', 
+          max: 20, value: 15, labelStep: 1, affix: 'قلم', mileStones: [7, 10, 15] 
+        }
       ]
     },
     async hazfe_hesab(id) {
@@ -153,29 +165,40 @@ export default function apis({ getState }) {
         { success: true, status: { type: 'واریز الماس', to: 'علی واحدی', gems: 320 }, date: '1401/4/5', time: '10:30' },
       ]
     },
-    async jostojooye_girandeye_almas(searchValue){
+    async jostojooye_girandeye_almas({phoneNumber,amount,description}){
       //ریترن آرایه ای از گیرندگان با فرمت زیر
       //{name:'محمد فیض',phone:'09123534314',id:'1'}
       //در صورت خطا ریترن متن خطا
-      return [
-        {name:'محمد فیض',phone:'09123534314',id:'1'},
-        {name:'محمد فیض',phone:'09123534314',id:'2'},
-        {name:'محمد فیض',phone:'09123534314',id:'3'},
-        {name:'محمد فیض',phone:'09123534314',id:'4'},
-        {name:'محمد فیض',phone:'09123534314',id:'5'},
-        {name:'محمد فیض',phone:'09123534314',id:'6'},
-        {name:'محمد فیض',phone:'09123534314',id:'7'},
-        {name:'محمد فیض',phone:'09123534314',id:'8'},
-        {name:'محمد فیض',phone:'09123534314',id:'9'},
-        {name:'محمد فیض',phone:'09123534314',id:'10'},
-      ]
+      // DestinationMobile*	string
+      // maxLength: 11
+      // minLength: 0
+      // Amount*	integer($int64)
+      // DepositTypeID*	integer($int32)
+      // Description	string
+      let res = await axios.post(
+        'http://10.10.10.22:8081/wallet/api/v1/User/Wallet/TransferRequest',
+        {
+          DestinationMobile:phoneNumber,
+          Amount:+amount,
+          DepositTypeID:2,
+          Description:'تست',
+        }  
+      )
+      return {name:'محمد فیض',phone:phoneNumber}
     },
     async enteghale_almas({password,tedade_almas_jahate_enteghal,girande}){
       //در صورت خطا ریترن متن خطا
       //در صورت موفقیت ریترن ترو
       
       //return 'خطایی رخ داده است'
-      return true
+      let res = await axios.post('http://10.10.10.22:8081/wallet/api/v1/User/Wallet/TransferConfirm',{
+        "DestinationMobile": girande.phone,
+        "Amount": +tedade_almas_jahate_enteghal,
+        "DepositTypeID": 2,
+        "Description": "string"
+      })
+      return res.data.IsSuccess;
+      
     },
     async chalesh_haye_man(){
       let time = new Date().getTime()

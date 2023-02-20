@@ -347,7 +347,6 @@ class EnteghaleAlmas extends Component{
     static contextType = AppContext;
     state = {
         tedade_almas_jahate_enteghal:0,searchValue:'',girande:false,
-        searchResult:undefined
     }
     iconButton(path){
         return <Icon path={path} size={1} className='icon-button'/>
@@ -366,51 +365,10 @@ class EnteghaleAlmas extends Component{
             rsa_actions.removePopup()
         }
     }
-    search(searchValue){
-        this.setState({searchValue,searchResult:'searching'});
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(async ()=>{
-            let {apis} = this.context;
-            let res = await apis({api:'jostojooye_girandeye_almas',parameter:searchValue});
-            this.setState({searchResult:res})
-        },1000)
-    }
-    searchResult_layout(){
-        let {searchResult,searchValue} = this.state;
-        if(searchResult === 'searching'){
-            return {
-                flex:1,align:'vh',
-                html:<Icon path={mdiLoading} size={1.5} spin={0.5}/>
-            }
-        }
-        if(Array.isArray(searchResult) && searchValue){
-            if(!searchResult.length){
-                return {
-                    flex:1,align:'vh',html:'شخصی مطابق با جستجوی شما پیدا نشد'
-                }
-            }
-            return {
-                flex:1,
-                className:'m-h-24 of-auto',
-                column:searchResult.map((o)=>{
-                    let {name,phone} = o;
-                    return {
-                        size:48,align:'v',
-                        onClick:()=>this.setState({girande:o}),
-                        style:{background:'rgba(255,255,255,0.1)',marginBottom:6,padding:'0 12px'},
-                        column:[
-                            {html:name,className:'fs-14 bold'},
-                            {html:phone,className:'fs-12'}
-                        ]
-                    }
-                })
-            }
-        }
-        return {flex:1}
-    }
+    
     page1_layout(){
         let {saghfe_enteghale_almas,rsa_actions} = this.context;
-        let {tedade_almas_jahate_enteghal,searchValue,searchResult,girande} = this.state;
+        let {tedade_almas_jahate_enteghal,searchValue,girande} = this.state;
         if(girande){return false}
         return {
             flex:1,
@@ -446,13 +404,33 @@ class EnteghaleAlmas extends Component{
                             html:(
                                 <input 
                                     type='text' value={searchValue} 
-                                    onChange={(e)=>this.search(e.target.value)}
+                                    onChange={(e)=>this.setState({searchValue:e.target.value})}
                                 />
                             )
                         },
-                        {size:12},
-                        this.searchResult_layout(),
+                        {size:12}
                     ]
+                },
+                {
+                    html:(
+                        <button onClick={async ()=>{
+                            let {apis} = this.context;
+                            let {tedade_almas_jahate_enteghal,searchValue} = this.state;
+                            let res = await apis({
+                                api:'jostojooye_girandeye_almas',
+                                parameter:{
+                                    phoneNumber:searchValue,
+                                    amount:tedade_almas_jahate_enteghal,
+                                    
+                                }
+                            });
+                            if(res){
+                                this.setState({girande:res})
+                            }
+                        }}>
+                            تایید
+                        </button>
+                    )
                 },
                 {
                     size:96,align:'vh',html:this.iconButton(mdiClose),onClick:()=>rsa_actions.removePopup()
