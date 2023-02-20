@@ -221,7 +221,11 @@ export default function apis({ getState }) {
         "DepositTypeID": 2,
         "Description": "string"
       })
-      return res.data.IsSuccess;
+      debugger;
+      if(res.data.IsSuccess){return true}
+      else {
+        return res.data.Message
+      }
       
     },
     async chalesh_haye_man(){

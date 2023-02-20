@@ -392,11 +392,7 @@ class EnteghaleAlmas extends Component{
                 },
                 {size:36},
                 {
-                    show:!!!tedade_almas_jahate_enteghal,flex:1,
-                },
-                {
                     show:!!tedade_almas_jahate_enteghal,
-                    flex:1,
                     column:[
                         layout('gloss_popup_label','جستجوی گیرنده الماس'),
                         {
@@ -411,9 +407,11 @@ class EnteghaleAlmas extends Component{
                         {size:12}
                     ]
                 },
+                {size:24},
                 {
+                    show:!!searchValue && searchValue.length === 11,align:'vh',
                     html:(
-                        <button onClick={async ()=>{
+                        <button style={{maxWidth:264}} onClick={async ()=>{
                             let {apis} = this.context;
                             let {tedade_almas_jahate_enteghal,searchValue} = this.state;
                             let res = await apis({
@@ -432,6 +430,7 @@ class EnteghaleAlmas extends Component{
                         </button>
                     )
                 },
+                {flex:1},
                 {
                     size:96,align:'vh',html:this.iconButton(mdiClose),onClick:()=>rsa_actions.removePopup()
                 }
