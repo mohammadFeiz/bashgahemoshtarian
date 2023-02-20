@@ -26,7 +26,13 @@ export default class ShakhesHa extends Component{
         className:'padding-12',gap:12,column:krs.map((o)=>this.card(o)),style:{background:'#F1F2F3'}
       }
     }
-    card({title,text,score,start,end,value,points,affix}){
+    card({title,text,score,start,end,value,points}){
+      let Points = points.map((o)=>o.Score);
+      let Points_dic = {}
+      for(let i = 0; i < points.length; i++){
+        let p = points[i];
+        Points_dic[p.Score.toString()] = p.Name
+      }
       return {
         column:[
           {
@@ -71,10 +77,11 @@ export default class ShakhesHa extends Component{
                   attrs={{style:{padding:'0 36px',paddingTop:20}}}
                   pointStyle={()=>{return {background:'orange'}}}
                   start={start} end={end} points={[value]}
-                  scaleStep={points}
-                  labelStep={points}
+                  scaleStep={Points}
+                  labelStep={Points}
+                  showValue={true}
                   labelStyle={()=>{return {top:-5,color:'#005478',fontSize:14}}}
-                  editLabel={(value)=>value + ' ' + affix}
+                  editLabel={(value)=>Points_dic[value.toString()]}
                   scaleStyle={()=>{
                     return {
                       width:12,height:12,transform:'translate(-6px,-6px)',borderRadius:'100%',background:'#005478',zIndex:100

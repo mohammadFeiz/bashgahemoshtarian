@@ -111,11 +111,35 @@ export default function apis({ getState }) {
       ]
     },
     async KRS() {
-      return [
-        { start: 2, end: 7, value: 3, score: 175, points: [2, 5, 7], title: 'استمرار خرید', text: 'واسه هر فاکتورت امتیاز بگیر!', affix: '' },
-        { start: 50, end: 200, value: 90, score: 140, points: [50, 100, 200], title: 'حجم خرید', text: 'سبدت هرچی پر تر امتیازت بیشتر!', affix: 'میلیون' },
-        { start: 7, end: 15, value: 11, score: 290, points: [7, 10, 15], title: 'SKU', text: 'فاکتور طولانی، امتیاز نورانی', affix: 'نوع' },
-      ]
+      let res = await axios.get('http://10.10.10.22:8081/pe/api/v1/Group/GroupRules');
+      debugger
+      let rules = res.data.Data.map((o)=>{
+        debugger;
+        let start = o.Rules[0].Score;
+        let end = o.Rules[o.Rules.length - 1].Score;
+        return { 
+          start,end, 
+          text:'زیر عنوان',
+          value: 3, 
+          score: 175, 
+          points: o.Rules, 
+          title: o.Name, 
+          description: o.Description, 
+        }
+        // return {
+        //   title:o.name,
+        //   subtitle:'زیر عنوان',
+        //   descriptioin:o.Description,
+        //   mileStones,
+        //   value:false
+        // }
+      })
+      return rules;
+      // return [
+      //   { start: 2, end: 7, value: 3, score: 175, points: [2, 5, 7], title: 'استمرار خرید', text: 'واسه هر فاکتورت امتیاز بگیر!', affix: '' },
+      //   { start: 50, end: 200, value: 90, score: 140, points: [50, 100, 200], title: 'حجم خرید', text: 'سبدت هرچی پر تر امتیازت بیشتر!', affix: 'میلیون' },
+      //   { start: 7, end: 15, value: 11, score: 290, points: [7, 10, 15], title: 'SKU', text: 'فاکتور طولانی، امتیاز نورانی', affix: 'نوع' },
+      // ]
     },
     async getAward() {
       return {}
