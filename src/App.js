@@ -16,6 +16,7 @@ import './App.css';
 import RVD from './npm/react-virtual-dom/react-virtual-dom';
 import AIOStorage from './npm/aio-storage/aio-storage'
 import {OTPLogin} from './npm/aio-login/aio-login';
+import clubgif from './images/club.gif';
 export default class App extends Component{
   constructor(props){
     super(props);
@@ -242,7 +243,7 @@ class Splash extends Component{
           className:'page',
           column:[
             {flex:1},
-            {html:'باشگاه مشتریان',align:'vh',className:'size24 bold colorfff splash-animation'},
+            {html:<img src={clubgif} width='300'/>,align:'vh',className:'size24 bold colorfff splash-animation'},
             {flex:1},
             {html:<img src={gemSrc} alt=''/>,align:'vh'}
           ]
