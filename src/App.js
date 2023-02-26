@@ -4,7 +4,7 @@ import AIOService from './npm/aio-service/aio-service';
 import apis from './apis';
 import Axios from 'axios';
 import {Icon} from '@mdi/react';
-import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet, mdiAccountBoxOutline, mdiEmailOutline} from '@mdi/js';
+import {mdiGift,mdiPoll,mdiHome,mdiHistory,mdiHelp, mdiWallet, mdiAccountBoxOutline, mdiEmailOutline, mdiAccountCircle, mdiClose} from '@mdi/js';
 import Javayez from './pages/javayez/javayez';
 import ShakhesHa from './pages/shakhes-ha/shakhes-ha';
 import Khane from './pages/khane/khane';
@@ -109,12 +109,24 @@ class Main extends Component{
       krs:[],
       catchedAwards:[],
       user:{
-        name:'کوروش شجاعی'
+        name:'کوروش شجاعی',
+        number:'09123534314'
       },
       nerkhe_tabdile_har_almas: 2000,
       pishnahade_tabdile_almas: 5000,
       saghfe_enteghale_almas:5000,
       selected_credit_card:'1'
+    }
+  }
+  openPopup(name){
+    let {rsa_actions} = this.state;
+    let {addPopup} = rsa_actions;
+    if(name === 'profile'){
+      addPopup({
+        type:'fullscreen',
+        body:()=><Profile/>,
+        header:false
+      })
     }
   }
   onError(message,{errorTitle}){
@@ -184,6 +196,7 @@ class Main extends Component{
     return {
       ...this.state,
       logout:this.props.logout,
+      openPopup:this.openPopup.bind(this),
       getAwards:this.getAwards.bind(this),
       getHistory:this.getHistory.bind(this),
       getScore:this.getScore.bind(this),
@@ -252,3 +265,91 @@ class Splash extends Component{
     )
   }
 }
+
+
+class Profile extends Component{
+  static contextType = AppContext;
+  state = {model:{}}
+  getHeader(){
+    let {page} = this.state;
+    if(page === 'virayeshe_ettelaate_karbari'){
+      return ''
+    }
+    if(page === 'amaliate_ramze_pardakht'){
+      return 'ویرایش'
+    }
+  }
+  change(key,value){
+
+  }
+  render(){
+    let {user} = this.context;
+    let {model} = this.state;
+    return (
+      <RVD
+        layout={{
+          className:'gloss-popup',
+          column:[
+            {
+              size:76
+            },
+            {
+              align:'h',
+              column:[
+                GlossPopupLayout('input',{type:'text',value:model.firstName,onChange:(value)=>this.change('firstName',value),label:'نام'}),
+                GlossPopupLayout('input',{type:'text',value:model.lastName,onChange:(value)=>this.change('lastName',value),label:'نام خانوادگی'}),
+              ]
+            },
+            {flex:1},
+            {
+              size:96,align:'vh',html:<Icon path={mdiClose} size={1} className='icon-button'/>
+            },
+
+          ]
+        }}
+      />
+    )
+  }
+}
+
+function GlossPopupLayout(type, parameter) {
+  if(type === 'input'){
+      return {
+          column:[
+              {html:parameter.label},
+              {html:(<input type={parameter.type} value={parameter.value} onChange={parameter.onChange} onClick={parameter.onClick}/>)},
+              {size:12},
+          ]
+      }
+  }
+  if(type === 'icon_button'){return <Icon path={parameter} size={1} className='icon-button'/>}
+  if(type === 'header'){
+      return {size:120,align:'vh',html:parameter}
+  }
+  if(type === 'label'){
+      return {
+          childsProps:{align:'v'},
+          className:'m-h-36 m-b-12 fs-14',
+          row:[
+              {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1},
+              {size:6},
+              {html:parameter},
+              {size:6},
+              {html:<div style={{height:1,background:'#fff',width:'100%'}}></div>,flex:1}
+          ]
+      }
+  }
+  
+}
+
+// {
+//   row:[
+//     {html:<Icon path={mdiAccountCircle} size={2.4}/>,align:'vh'},
+//     {
+//       column:[
+//         {html:user.name,flex:1},
+//         {html:user.number,flex:1}
+//       ]
+//     }
+//   ]
+// }

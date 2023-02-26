@@ -6,7 +6,7 @@ import './header.css';
 export default class Header extends Component{
     static contextType = AppContext;
     render(){
-        let {gems,logout} = this.context;
+        let {gems,logout,user,openPopup} = this.context;
         return (
             <RVD
                 layout={{
@@ -15,7 +15,17 @@ export default class Header extends Component{
                         {
                           align:'v',className:'margin-0-12',
                           row:[
-                            {html:getSvg('burux'),attrs:{onClick:()=>logout()}},
+                            {
+                                column:[
+                                    {html:getSvg('burux'),attrs:{onClick:()=>logout()}},
+                                    {
+                                        html:user.name,className:'colorfff fs-12',
+                                        onClick:()=>{
+                                            openPopup('profile')
+                                        }
+                                    }
+                                ]
+                            },
                             {flex:1},
                             {html:gems,className:'header-score'},{html:getSvg('gem1')}]
                         }
