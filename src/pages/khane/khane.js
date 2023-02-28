@@ -156,7 +156,11 @@ export default class Khane extends Component{
     awardCard(o){
       let {title,text,score,src} = o;
       return {
-        className:'home-award-card',attrs:{onClick:()=>this.setState({showAward:o})},
+        className:'home-award-card',
+        onClick:()=>{
+          let {openPopup} = this.context;
+          openPopup('reward',o)
+        },
         column:[
           {flex:1,html:<img src={src} alt="" width='100%'/>},
           {

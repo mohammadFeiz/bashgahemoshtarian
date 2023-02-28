@@ -18,6 +18,7 @@ import AIOStorage from './npm/aio-storage/aio-storage'
 import {OTPLogin} from './npm/aio-login/aio-login';
 import clubgif from './images/club.gif';
 import {Profile,RamzePardakht} from './components/profile';
+import Reward from './components/reward';
 export default class App extends Component{
   constructor(props){
     super(props);
@@ -119,24 +120,6 @@ class Main extends Component{
       selected_credit_card:'1'
     }
   }
-  openPopup(name){
-    let {rsa_actions} = this.state;
-    let {addPopup} = rsa_actions;
-    if(name === 'profile'){
-      addPopup({
-        type:'fullscreen',
-        body:()=><Profile/>,
-        header:false
-      })
-    }
-    else if(name === 'ramze_pardakht'){
-      addPopup({
-        type:'fullscreen',
-        body:()=><RamzePardakht/>,
-        header:false
-      })
-    }
-  }
   onError(message,{errorTitle}){
     let {rsa_actions} = this.state;
     rsa_actions.setConfirm({
@@ -217,7 +200,6 @@ class Main extends Component{
       getPoorsant:this.getPoorsant.bind(this),
       getCatchedAwards:this.getCatchedAwards.bind(this),
       getKRs:this.getKRs.bind(this),
-      openPopup:this.openPopup.bind(this),
       SetState:(obj)=>this.setState(obj),
       changeAwardSort:async (activeAwardSort)=>{
         await this.getAwards(activeAwardSort);
@@ -238,6 +220,13 @@ class Main extends Component{
       addPopup({
         body:()=><RamzePardakht/>,
         header:false
+      })
+    }
+    else if(name === 'reward'){
+      addPopup({
+        type:'fullscreen',
+        body:()=><Reward/>,
+        title:'جزییات جایزه'
       })
     }
   }
@@ -298,170 +287,7 @@ class Splash extends Component{
 }
 
 
-class Profile extends Component{
-  static contextType = AppContext;
-  state = {model:{}}
-  change(key,value){
 
-  }
-  input_layout({label,type,value,onChange}){
-    return {
-      column:[
-        {align:'h',html:label},
-        {align:'vh',html:<input type={type} value={value} onChange={onChange}/>}
-      ]
-    }
-  }
-  onClose(){
-    let {rsa_actions} = this.context;
-    rsa_actions.removePopup()
-  }
-  render(){
-    let {user} = this.context;
-    let {model} = this.state;
-    let {onClose} = this.props;
-    return (
-      <RVD
-        layout={{
-          className:'gloss-popup',
-          column:[
-            {
-              size:76,html:'ویرایش اطلاعات کاربری',align:'vh'
-            },
-            this.input_layout({
-              type:'text',label:'نام',value:model.firstName,
-              onChange:(e)=>this.change('firstName',e.target.value)
-            }),
-            {size:12},
-            this.input_layout({
-              type:'text',label:'نام خانوادگی',value:model.lastName,
-              onChange:(e)=>this.change('lastName',e.target.value)
-            }),
-            {size:36},
-            {
-              align:'h',
-              html:(
-                <button style={{maxWidth:240}}>ثبت</button>
-              )
-            },
-            {flex:1},
-            {
-              size:96,align:'vh',html:<Icon path={mdiClose} size={1} className='icon-button'/>,
-              onClick:()=>this.onClose()
-            },
-
-          ]
-        }}
-      />
-    )
-  }
-}
-
-class RamzePardakht extends Component{
-  static contextType = AppContext;
-  state = {
-    hasPass:true,
-
-    model:{
-      currentPass:'',
-      newPass:'',
-      rePass:'',
-    }
-  }
-  change(key,value){
-    let {model} = this.state;
-    model[key] = value;
-    this.setState({model})
-  }
-  input_layout({label,type,value,onChange,placeholder,show = true}){
-    if(show === false){return false}
-    return {
-      column:[
-        {align:'h',html:label},
-        {align:'vh',html:<input type={type} value={value} onChange={onChange} placeholder={placeholder}/>}
-      ]
-    }
-  }
-  onClose(){
-    let {rsa_actions} = this.context;
-    rsa_actions.removePopup()
-  }
-  error_layout(key){
-    let {model,hasPass} = this.state;
-    if(hasPass && key === 'currentPass'){
-      if(model.currentPass.length !== 6){
-        return {
-          html:'رمز عبور فعلی باید 6 کاراکتر باشد',align:'h',className:'fs-12',style:{color:'orange'}
-        }
-      }
-    }
-    if(key === 'newPass'){
-      if(model.newPass.length !== 6){
-        return {
-          html:'رمز عبور باید 6 کاراکتر باشد',align:'h',className:'fs-12',style:{color:'orange'}
-        }
-      }
-    }
-    if(key === 'rePass'){
-      if(model.newPass !== model.rePass){
-        return {
-          html:'رمز عبور و تکرار رمز عبور مطابقت ندارند ',align:'h',className:'fs-12',style:{color:'orange'}
-        }
-      }
-    }
-    
-  }
-  render(){
-    let {model,hasPass} = this.state;
-    return (
-      <RVD
-        layout={{
-          className:'gloss-popup',
-          column:[
-            {
-              size:76,html:hasPass?'ویرایش رمز پرداخت':'ایجاد رمز پرداخت',align:'vh'
-            },
-            {
-              html:'رمز پرداخت باید 6 رقم و شامل اعداد باشد',align:'vh'
-            },
-            {flex:1},
-            this.input_layout({
-              type:'password',label:'رمز فعلی',value:model.currentPass,placeholder:'------',
-              onChange:(e)=>this.change('currentPass',e.target.value),show:!!hasPass
-            }),
-            this.error_layout('currentPass'),
-            
-            this.input_layout({
-              type:'password',label:'رمز جدید',value:model.newPass,placeholder:'------',
-              onChange:(e)=>this.change('newPass',e.target.value)
-            }),
-            this.error_layout('newPass'),
-            {size:12},
-            this.input_layout({
-              type:'password',label:'تکرار رمز',value:model.rePass,
-              onChange:(e)=>this.change('rePass',e.target.value)
-            }),
-            this.error_layout('rePass'),
-            {size:48},
-            {
-              align:'h',
-              html:(
-                <button style={{maxWidth:240}}>ثبت</button>
-              )
-            },
-            {flex:1},
-            
-            {
-              size:96,align:'vh',html:<Icon path={mdiClose} size={1} className='icon-button'/>,
-              onClick:()=>this.onClose()
-            },
-
-          ]
-        }}
-      />
-    )
-  }
-}
 
 
 // {
