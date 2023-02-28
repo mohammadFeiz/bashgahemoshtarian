@@ -15,6 +15,22 @@ export default function apis({ getState }) {
         return 'دریافت میزان الماس کاربر با مشکل مواجه شد'
       }
     },
+    async getProfile(){
+      let res = await axios.get('http://10.10.10.22:8081/sso/api/v1/user/Profile');
+      if(res.data.IsSuccess){
+        return res.data.Data
+      }
+    },
+    async setProfile(model){
+      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/UpdateProfile',model);
+      if(res.data.IsSuccess){
+        return true
+      }
+      else {
+        debugger;
+      }
+      
+    },
     async history() {
       return [
         { date: '1401/2/2', gem: 5, score: -10, title: 'استفاده از قانون مشتری فعال' },

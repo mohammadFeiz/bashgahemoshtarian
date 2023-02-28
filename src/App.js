@@ -17,6 +17,7 @@ import RVD from './npm/react-virtual-dom/react-virtual-dom';
 import AIOStorage from './npm/aio-storage/aio-storage'
 import {OTPLogin} from './npm/aio-login/aio-login';
 import clubgif from './images/club.gif';
+import {Profile,RamzePardakht} from './components/profile';
 export default class App extends Component{
   constructor(props){
     super(props);
@@ -138,6 +139,11 @@ class Main extends Component{
     let gems = await apis({api:'gems',parameter:{mobile}});
     this.setState({gems})
   }
+  async getProfile(){
+    const {apis} = this.state;
+    let profile = await apis({api:'getProfile'});
+    this.setState({profile})
+  }
   async getHistory(){
     const {apis} = this.state;
     let history = await apis({api:'history'});
@@ -175,6 +181,7 @@ class Main extends Component{
   }
   async componentDidMount(){
      this.getGems();
+     this.getProfile();
      this.getPoorsant();
      this.getScore();
      this.getDetails();
@@ -190,11 +197,28 @@ class Main extends Component{
       getPoorsant:this.getPoorsant.bind(this),
       getCatchedAwards:this.getCatchedAwards.bind(this),
       getKRs:this.getKRs.bind(this),
+      openPopup:this.openPopup.bind(this),
       SetState:(obj)=>this.setState(obj),
       changeAwardSort:async (activeAwardSort)=>{
         await this.getAwards(activeAwardSort);
         this.setState({activeAwardSort});
       }
+    }
+  }
+  openPopup(name,parameter){
+    let {rsa_actions} = this.state;
+    let {addPopup} = rsa_actions;
+    if(name === 'profile'){
+      addPopup({
+        body:()=><Profile/>,
+        header:false
+      })
+    }
+    else if(name === 'ramze_pardakht'){
+      addPopup({
+        body:()=><RamzePardakht/>,
+        header:false
+      })
     }
   }
   render(){
