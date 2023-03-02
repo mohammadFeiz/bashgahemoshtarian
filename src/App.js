@@ -166,10 +166,10 @@ class Main extends Component{
     let score = await apis({api:'score'});
     this.setState({score})
   }
-  async getAwards(activeAwardSort = '0'){
+  async getRewards(activeAwardSort = '0'){
     const {apis} = this.state;
-    let awards = await apis({api:'awards',parameter:activeAwardSort});
-    this.setState({awards})
+    let rewards = await apis({api:'rewards',parameter:activeAwardSort});
+    this.setState({rewards})
   }
   async getCatchedAwards(){
     const {apis} = this.state;
@@ -187,14 +187,14 @@ class Main extends Component{
      this.getPoorsant();
      this.getScore();
      this.getDetails();
-     this.getAwards();
+     this.getRewards();
   }
   getContext(){
     return {
       ...this.state,
       logout:this.props.logout,
       openPopup:this.openPopup.bind(this),
-      getAwards:this.getAwards.bind(this),
+      getRewards:this.getRewards.bind(this),
       getHistory:this.getHistory.bind(this),
       getScore:this.getScore.bind(this),
       getPoorsant:this.getPoorsant.bind(this),
@@ -202,7 +202,7 @@ class Main extends Component{
       getKRs:this.getKRs.bind(this),
       SetState:(obj)=>this.setState(obj),
       changeAwardSort:async (activeAwardSort)=>{
-        await this.getAwards(activeAwardSort);
+        await this.getRewards(activeAwardSort);
         this.setState({activeAwardSort});
       }
     }
@@ -225,7 +225,7 @@ class Main extends Component{
     else if(name === 'reward'){
       addPopup({
         type:'fullscreen',
-        body:()=><Reward/>,
+        body:()=><Reward {...parameter}/>,
         title:'جزییات جایزه'
       })
     }

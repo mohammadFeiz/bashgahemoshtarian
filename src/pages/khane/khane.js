@@ -116,14 +116,6 @@ export default class Khane extends Component{
         attrs:{onClick:()=>onClick()}
       }
     }
-    awardsHandle(){
-      let {openAwards} = this.state;
-      return {
-        html:<div className='home-awards-handle'></div>,
-        align:'vh',size:36,className:'home-awards-header',
-        attrs:{onClick:()=>this.setState({openAwards:!openAwards})}
-      }
-    }
     awardsSort(){
       let {awardSorts,activeAwardSort,changeAwardSort} = this.context;
       return {
@@ -146,41 +138,10 @@ export default class Khane extends Component{
           }]
       }
     }
-    awardsCards(){
-      let {awards} = this.context;
-      return {
-        flex:1,className:'home-award-cards',
-        column:awards.map((o)=>this.awardCard(o))
-      }
-    }
-    awardCard(o){
-      let {title,text,score,src} = o;
-      return {
-        className:'home-award-card',
-        onClick:()=>{
-          let {openPopup} = this.context;
-          openPopup('reward',o)
-        },
-        column:[
-          {flex:1,html:<img src={src} alt="" width='100%'/>},
-          {
-            flex:1,className:'home-award-card-footer',
-            column:[
-              {html:title,align:'v',className:'padding-8 bold size12'},
-              {html:text,flex:1,className:'padding-8 bold color605E5C size10'},
-              {
-                childsProps:{align:'v'},className:'padding-8',
-                row:[{flex:1},{html:score},{html:getSvg('gem2')}]
-              } 
-            ]
-          }
-        ]
-      }
-    }
     detailsCards(){
       let {details} = this.context;
       return {
-        gap:12,scroll:'v',flex:1,className:'home-details-cards',
+        gap:12,scroll:'v',className:'home-details-cards',
         column:details.map(({title,text,max,value,mileStones,labelStep,affix})=>{
           return {
             className:'home-detail-card margin-0-12',
@@ -216,29 +177,8 @@ export default class Khane extends Component{
         })
       }
     }
-    awardsLabel(){
-      return {html:'لیست جوایز',size:36,align:'v',className:'size14 colorfff margin-0-12'}
-    }
     header(){
       return {align:'v',className:'margin-0-12',row:[{html:getSvg('burux')},{flex:1},{html:22567,className:'home-score'},{html:getSvg('gem1')}]}
-    }
-    awards(){
-      return {
-        flex:1,
-        column:[
-          this.awardsLabel(),
-          this.tabs(),
-          {
-            flex:1,
-            className:'home-awards',
-            column:[
-              this.awardsHandle(),
-              this.awardsSort(),
-              this.awardsCards()
-            ]
-          }
-        ]
-      }
     }
     async getAward(){
         let {apis} = this.context;
@@ -246,50 +186,12 @@ export default class Khane extends Component{
         let res = await apis({api:'getAward',parameter:showAward})
         this.setState({showAward:false})
     }
-    award(){
-      let {showAward} = this.state;
-      let {title,score,description,howToUse,rules} = showAward;
-      return {
-        style:{background:'#fff'},flex:1,scroll:'v',
-        column:[
-          {size:161,html:'تصویر',align:'vh'},
-          {size:36,html:title,className:'size14 bold padding-0-24',align:'v'},
-          {
-            size:36,className:'padding-0-24',
-            row:[
-              {html:score,className:'size10 bold',align:'v'},
-              {size:5},
-              {html:'الماس',className:'size10 bold',align:'v'},
-              {size:5},
-              {html:getSvg('gem3'),className:'size10 bold',align:'v'},
-              {size:5},
-              {html:'مورد نیاز',className:'size10',align:'v'}
-            ]
-          },
-          {size:36,html:<div style={{height:2,width:'100%',background:'#ddd'}}></div>,align:'v'},
-          {size:36,html:'توضیحات و مشخصات :',className:'size14 bold padding-0-24',align:'v'},
-          {size:36,html:description,className:'size12 padding-0-24',align:'v'},
-          {size:36,html:<div style={{height:2,width:'100%',background:'#ddd'}}></div>,align:'v'},
-          {size:36,html:'نحوه استفاده :',className:'size14 bold padding-0-24',align:'v'},
-          {size:36,html:howToUse,className:'size12 padding-0-24',align:'v'},
-          {size:36,html:<div style={{height:2,width:'100%',background:'#ddd'}}></div>,align:'v'},
-          {size:36,html:'قوانین و مقررات :',className:'size14 bold padding-0-24',align:'v'},
-          {size:36,html:rules,className:'size12 padding-0-24',align:'v'},
-          {size:36,html:<div style={{height:2,width:'100%',background:'#ddd'}}></div>,align:'v'},
-          {html:<button style={{background:'#0094D4',color:'#fff',height:45,border:'none',padding:'0 36px',borderRadius:4,fontFamily:'inherit'}}
-          onClick={()=>this.getAward()}>دریافت جایزه</button>,align:'vh'}
-          
-          
-        ]
-      }
-    }
     async componentDidMount(){
       this.context.getScore();
-      this.context.getAwards();
+      this.context.getRewards();
     }
     render(){
       let {showDetails,openAwards,showAward} = this.state;
-      let {logout} = this.context;
       return (
         <RVD
           layout={{
@@ -297,10 +199,89 @@ export default class Khane extends Component{
             column:[
               {html:<Header/>},
               {size:12},
-              openAwards || showAward?false:this.card(),
-              showDetails || showAward?false:this.awards(),
-              !showDetails || showAward?false:this.detailsCards(),
-              !showAward?false:this.award()
+              {
+                flex:1,
+                className:'ofy-auto',
+                column:[
+                  openAwards || showAward?false:this.card(),
+                  {size:12},
+                  !showDetails?false:this.detailsCards(),
+                  showDetails?false:{flex:1},
+                  {size:12},
+                  {html:<Rewards/>},
+                  
+                ]
+              }
+            ]
+          }}
+        />
+      )
+    }
+  }
+
+
+  class Rewards extends Component{
+    static contextType = AppContext;
+    label_layout(){
+      return {html:'لیست جوایز',align:'v',className:'p-h-12 m-t-16 fs-14 bold br-12 br-t-0'}
+    }
+    cards_layout(){
+      let {rewards} = this.context;
+      if(!rewards || !rewards.length){return false}
+      return {
+        flex:1,className:'home-award-cards',
+        column:rewards.map((o)=>this.card_layout(o))
+      }
+    }
+    card_layout(o){
+      return {html:<RewardCard data={o}/>}
+    }
+    render(){
+      return (
+        <RVD
+          layout={{
+            column:[
+              {
+                flex:1,
+                className:'home-awards br-12 br-b-0',
+                column:[
+                  this.label_layout(),
+                  this.cards_layout()
+                ]
+              }
+            ]
+          }}
+        />
+      )
+    }
+  }
+
+  class RewardCard extends Component{
+    render(){
+      let {data} = this.props;
+      let {name,details = [],price,src} = data;
+      return (
+        <RVD
+          layout={{
+            className:'home-award-card',
+            onClick:()=>{
+              let {openPopup} = this.context;
+              openPopup('reward',data)
+            },
+            column:[
+              {flex:1,html:<img src={src} alt="" width='100%'/>},
+              {size:12,style:{background:'#fff',position:'absolute',left:0,top:104,width:'100%'},className:'br-12 br-b-0'},
+              {
+                flex:1,className:'home-award-card-footer',
+                column:[
+                  {html:name,align:'v',className:'padding-8 bold size12'},
+                  {html:details[0],flex:1,className:'padding-8 bold color605E5C size10'},
+                  {
+                    childsProps:{align:'v'},className:'padding-8',
+                    row:[{flex:1},{html:price},{html:getSvg('gem2')}]
+                  } 
+                ]
+              }
             ]
           }}
         />

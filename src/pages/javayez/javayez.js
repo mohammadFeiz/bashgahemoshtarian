@@ -4,9 +4,21 @@ import RVD from './../../npm/react-virtual-dom/react-virtual-dom';
 import AppContext from './../../app-context';
 import Header from "../../components/header/header";
 import Titr from "../../components/header/titr/titr";
+import AIOButton from './../../npm/aio-button/aio-button';
 export default class Javayez extends Component{
     static contextType = AppContext;
-    cards(){
+    state = {activeTabId:'0'}
+    listeJavayez_layout(){
+      let {activeTabId} = this.state;
+      if(activeTabId !== '0'){return false}
+      let {catchedAwards} = this.context;
+      return {
+        flex:1,scroll:'v',className:'padding-12',gap:12,column:catchedAwards.map((o)=>this.card(o)),style:{background:'#F1F2F3'}
+      }
+    }
+    javayezeDaryafti_layout(){
+      let {activeTabId} = this.state;
+      if(activeTabId !== '1'){return false}
       let {catchedAwards} = this.context;
       return {
         flex:1,scroll:'v',className:'padding-12',gap:12,column:catchedAwards.map((o)=>this.card(o)),style:{background:'#F1F2F3'}
@@ -46,6 +58,23 @@ export default class Javayez extends Component{
     async componentDidMount(){
       this.context.getCatchedAwards();
     }
+    tabs_layout(){
+      let {activeTabId} = this.state;
+      return {
+        style:{background:'#fff'},
+        html:(
+          <AIOButton
+            type='tabs'
+            value={activeTabId}
+            options={[
+              {text:'لیست جوایز',value:'0',style:{flex:1}},
+              {text:'جوایز دریافتی',value:'1',style:{flex:1}}
+            ]}
+            onChange={(activeTabId)=>this.setState({activeTabId})}
+          />
+        )
+      }
+    }
     render(){
       return (
         <RVD
@@ -53,8 +82,9 @@ export default class Javayez extends Component{
             className:'page',
             column:[
               {html:<Header/>},
-              {html:<Titr text={'جوایز دریافتی'}/>},
-              this.cards()
+              {html:<Titr text={'جوایز'}/>},
+              this.tabs_layout(),
+              this.javayezeDaryafti_layout()
             ]
           }}
         />

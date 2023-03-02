@@ -47,6 +47,9 @@ export default class Header extends Component{
                                                             else if(value === '1'){
                                                                 openPopup('ramze_pardakht')
                                                             }
+                                                            else if(value === '2'){
+                                                                logout()
+                                                            }
                                                         }}
                                                     />
                                                 )

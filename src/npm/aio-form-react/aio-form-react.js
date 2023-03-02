@@ -90,9 +90,9 @@ export default class AIOForm extends Component {
     if(type === 'boolean'){
       let {theme:themeProps = {}} = this.props;
       let {theme:themeInput = {}} = input;
-      let p = !!themeProps[key];
-      let i = !!themeInput[key];
-      return p || i;
+      let p = themeProps[key];
+      let i = themeInput[key];
+      return i === undefined?p:i;
     }
     
   }
@@ -423,7 +423,7 @@ export default class AIOForm extends Component {
         if(o.type === 'select' || o.type === 'radio'){
           try{
             let trg = options.find((o)=>o.value === target)
-            params.targetPresentation = trg.text;
+            params.target = trg.text;
           }
           catch{let a = ''}
           
@@ -651,29 +651,6 @@ class Input extends Component{
       dom.style.resize = 'none';
     }
   }
-  isTextSelected(input){
-    let {value} = this.state;
-    var startPos = input.selectionStart;
-    var endPos = input.selectionEnd;
-    var doc = document.selection;
- 
-    if(doc && doc.createRange().text.length != 0){
-       return true;
-    }else if (!doc && value.substring(startPos,endPos).length != 0){
-       return true;
-    }
-    return false;
-  }
-  focus(){
-    // let dom = $(this.dom.current)  
-    // if(!this.isTextSelected(dom[0])){
-    //   dom.focus().select()
-    // }
-    // else {
-    //   window.getSelection().removeAllRanges();
-    // }
-    
-  }
   render(){
     let {options,type} = this.props;
     let {error,prevValue,value} = this.state;   
@@ -689,7 +666,7 @@ class Input extends Component{
       <textarea {...props} value={value === undefined?'':value}/>
     ) : (
       <>
-        <input onClick={()=>this.focus()} {...props} value={value === undefined?'':value} list={uid}/>
+        <input {...props} value={value === undefined?'':value} list={uid}/>
         {Array.isArray(options) && options.length !== 0 && this.getOptions(uid)}
       </>
     );
