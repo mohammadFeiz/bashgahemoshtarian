@@ -22,13 +22,32 @@ import Reward from './components/reward';
 export default class App extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      isAutenticated:false,registered:true
+    }
+  }
+  async componentDidMount(){
+    this.mounted = true;
     this.tokenStorage = AIOStorage('bashgak-token');
     let token = this.tokenStorage.load('token',false);
     let isAutenticated = false;
-    if(token){isAutenticated = true}
-    this.state = {
-      isAutenticated,registered:true,token
+    if(token){
+      try{
+        const config = {
+          headers: { Authorization: `Bearer ${token}` }
+        };
+        let res = await Axios.get(`http://10.10.10.22:8081/sso/api/v1/user/Profile`,config);
+        debugger;
+      }
+      catch(err){
+        isAutenticated = false;
+      }
     }
+    this.setState({
+      isAutenticated,token
+    })
+    
+      
   }
   async onInterNumber(number){
     let res = await Axios.post('http://10.10.10.22:8081/sso/api/v1/user/twofactorauth', { Mobile: number })
@@ -42,7 +61,6 @@ export default class App extends Component{
     }
   }
   async onInterCode({number,code,FirstName,LastName,Email}){
-    debugger;
     code = code.toString();
     let res = await Axios.post(
       'http://10.10.10.22:8081/sso/api/v1/user/twofactorauthconfirm', 
@@ -62,6 +80,7 @@ export default class App extends Component{
 
   }
   render(){
+    if(!this.mounted){return null}
     let {isAutenticated,token,registered} = this.state;
     if(isAutenticated){
       return <Main token={token} mobile={this.tokenStorage.load('mobile')}/>
@@ -181,6 +200,11 @@ class Main extends Component{
     let krs = await apis({api:'KRS'});
     this.setState({krs})
   }
+  async getHasPayPassword(){
+    const {apis} = this.state;
+    let hasPayPassword = await apis({api:'hasPayPassword'});
+    if(typeof hasPayPassword === 'boolean'){this.setState({hasPayPassword})}
+  }
   async componentDidMount(){
      this.getGems();
      this.getProfile();
@@ -188,6 +212,7 @@ class Main extends Component{
      this.getScore();
      this.getDetails();
      this.getRewards();
+     this.getHasPayPassword()
   }
   getContext(){
     return {

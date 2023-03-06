@@ -6,9 +6,10 @@ import rewardsrc from './images/9f74c7.jpg';
 // let res = await axios.post(url,body);
 
 export default function apis({ getState }) {
+  let baseUrl = 'http://10.10.10.22:8081';
   return {
     async gems() {
-      let res = await axios.get('http://10.10.10.22:8081/wallet/api/v1/User/wallet/balance')
+      let res = await axios.get(`${baseUrl}/wallet/api/v1/User/wallet/balance`)
       if (res.data.IsSuccess) {
         return res.data.Data[0].Balance;
       }
@@ -17,20 +18,29 @@ export default function apis({ getState }) {
       }
     },
     async getProfile(){
-      let res = await axios.get('http://10.10.10.22:8081/sso/api/v1/user/Profile');
+      let res = await axios.get(`${baseUrl}/sso/api/v1/user/Profile`);
       if(res.data.IsSuccess){
         return res.data.Data
       }
     },
     async setProfile(model){
-      let res = await axios.post('http://10.10.10.22:8081/sso/api/v1/user/UpdateProfile',model);
+      let res = await axios.post(`${baseUrl}/sso/api/v1/user/UpdateProfile`,model);
       if(res.data.IsSuccess){
         return true
       }
       else {
         debugger;
       }
-      
+    },
+    async hasPayPassword(){
+      let res = await axios.get(`${baseUrl}/sso/api/v1/user/CheckPayPassword`);
+      debugger;
+      if(res.data.IsSuccess){
+        return true
+      }
+      else {
+        return 'خطا'
+      }
     },
     async history() {
       return [
@@ -128,7 +138,7 @@ export default function apis({ getState }) {
       ]
     },
     async KRS() {
-      let res = await axios.get('http://10.10.10.22:8081/pe/api/v1/Group/GroupRules');
+      let res = await axios.get(`${baseUrl}/pe/api/v1/Group/GroupRules`);
       debugger
       let rules = res.data.Data.map((o)=>{
         debugger;
@@ -217,7 +227,7 @@ export default function apis({ getState }) {
       // DepositTypeID*	integer($int32)
       // Description	string
       let res = await axios.post(
-        'http://10.10.10.22:8081/wallet/api/v1/User/Wallet/TransferRequest',
+        `${baseUrl}/wallet/api/v1/User/Wallet/TransferRequest`,
         {
           DestinationMobile:phoneNumber,
           Amount:+amount,
@@ -232,20 +242,39 @@ export default function apis({ getState }) {
       //در صورت موفقیت ریترن ترو
       
       //return 'خطایی رخ داده است'
-      let res = await axios.post('http://10.10.10.22:8081/wallet/api/v1/User/Wallet/TransferConfirm',{
+      let res = await axios.post(`${baseUrl}/wallet/api/v1/User/Wallet/TransferConfirm`,{
         "DestinationMobile": girande.phone,
         "Amount": +tedade_almas_jahate_enteghal,
         "DepositTypeID": 2,
         "Description": "string"
       })
-      debugger;
       if(res.data.IsSuccess){return true}
       else {
         return res.data.Message
       }
       
     },
+    handleNull(v){
+      return v === null?undefined:v;
+    },
     async rewards(){
+
+      let res = await axios.get(`${baseUrl}/ecommerce/api/v1/Product/FindAll`);
+      debugger;
+      if(!res.Data.IsSuccess){return res.Data.Message}
+      return res.Data.data.map(({Name,Amount,Pic})=>{
+        return {
+          name:this.handleNull(Name),
+          price:this.handleNull(Amount),
+          discountPercent:undefined,
+          src:this.handleNull(Pic),
+          rate:undefined,
+          details:[],
+          rules:[]
+        }
+
+
+      })
       return [
         {
           name:'سفر به کیش',

@@ -22,6 +22,7 @@ export default class ShakhesHa extends Component{
     }
     cards(){
       let {krs} = this.context;
+      if(!krs){return false}
       return {
         className:'padding-12',gap:12,column:krs.map((o)=>this.card(o)),style:{background:'#F1F2F3'}
       }
