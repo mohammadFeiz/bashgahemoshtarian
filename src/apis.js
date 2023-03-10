@@ -34,13 +34,22 @@ export default function apis({ getState }) {
     },
     async hasPayPassword(){
       let res = await axios.get(`${baseUrl}/sso/api/v1/user/CheckPayPassword`);
-      debugger;
       if(res.data.IsSuccess){
-        return true
+        return res.data.Data.Existed
       }
       else {
         return 'خطا'
       }
+    },
+    async updatePayPassword({currentPassword,newPassword}){
+      let res = await axios.post(`${baseUrl}/api​/v1​/user​/UpdatePayPassword`,{
+        CurrenyPayPassword:currentPassword,
+        NewPayPassword:newPassword
+      })
+      if(res.data.IsSuccess){
+        return true
+      }
+      return 'خطا'
     },
     async history() {
       return [
@@ -260,9 +269,8 @@ export default function apis({ getState }) {
     async rewards(){
 
       let res = await axios.get(`${baseUrl}/ecommerce/api/v1/Product/FindAll`);
-      debugger;
-      if(!res.Data.IsSuccess){return res.Data.Message}
-      return res.Data.data.map(({Name,Amount,Pic})=>{
+      if(!res.data.IsSuccess){return res.Data.Message}
+      return res.data.Data.map(({Name,Amount,Pic})=>{
         return {
           name:this.handleNull(Name),
           price:this.handleNull(Amount),
@@ -696,6 +704,22 @@ export default function apis({ getState }) {
       ]
     },
     async chalesh_haye_man(){
+      let res = await axios.get(`${baseUrl}/pe/api/v1/Rule/GetChallenges`)
+      if(res.data.IsSuccess){
+        return res.data.Data.map(({RuleName,Status,Description,Gem,Score})=>{
+          return {
+            name:RuleName,
+            status:Status,
+            text:Description,
+            reward:{
+              gem:Gem,
+              score:Score
+            }
+
+          }
+        })
+      }
+      return res.data.Message
       let time = new Date().getTime()
       let chalesh_dic = {
         'doing':{text:'در حال اجرا',color:'#1D87B4'},

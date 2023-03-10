@@ -91,7 +91,12 @@ export class Profile extends Component{
 
 export class RamzePardakht extends Component{
     static contextType = AppContext;
-    state = {model:{currentPassword:'',newPassword:'',rePassword:''},hasPassword:true}
+    state = {model:{currentPassword:'',newPassword:'',rePassword:''},hasPassword:false}
+    async componentDidMount(){
+        let {hasPayPassword} = this.context;
+
+        this.setState({hasPassword:hasPayPassword})
+    }
     header_layout(){
         let {hasPassword} = this.state;
         return {
@@ -99,7 +104,12 @@ export class RamzePardakht extends Component{
         }
     }
     async onSubmit(){
-
+        let {apis} = this.context;
+        let {newPassword} = this.state;
+        let res = await apis({api:'updatePayPassword',parameter:{currentPassword,newPassword}})
+        if(res === true){
+            this.onClose()
+        }
     }
     form_layout(){
         let {model,hasPassword} = this.state

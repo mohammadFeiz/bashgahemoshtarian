@@ -240,3 +240,29 @@ input[type=number]{
 .glass-popup .aio-form-error{
   color:orange;
 }
+
+.home-award-card{
+  height:229px;
+  width:160px;
+  border-radius:12px;
+  margin:0 6px;
+}
+.home-award-card.horizontal{
+  height:120px;
+  width:100%;
+  
+}
+
+.home-award-card-footer{
+  background:#fff;
+  border-radius: 0 0 12px 12px;
+}
+.button-1{
+  background: dodgerblue;
+  color:#fff;
+  border:none;
+  padding:0 24px;
+  height:60px;
+  border-radius:6px;
+
+}

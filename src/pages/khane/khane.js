@@ -6,6 +6,7 @@ import AppContext from "../../app-context";
 import getSvg from "../../getSvg";
 import './khane.css';
 import Header from "../../components/header/header";
+import RewardCard from "../../components/reward-card";
 export default class Khane extends Component{
     static contextType = AppContext;
     state = {
@@ -256,35 +257,4 @@ export default class Khane extends Component{
     }
   }
 
-  class RewardCard extends Component{
-    render(){
-      let {data} = this.props;
-      let {name,details = [],price,src} = data;
-      return (
-        <RVD
-          layout={{
-            className:'home-award-card',
-            onClick:()=>{
-              let {openPopup} = this.context;
-              openPopup('reward',data)
-            },
-            column:[
-              {flex:1,html:<img src={src} alt="" width='100%'/>},
-              {size:12,style:{background:'#fff',position:'absolute',left:0,top:104,width:'100%'},className:'br-12 br-b-0'},
-              {
-                flex:1,className:'home-award-card-footer',
-                column:[
-                  {html:name,align:'v',className:'padding-8 bold size12'},
-                  {html:details[0],flex:1,className:'padding-8 bold color605E5C size10'},
-                  {
-                    childsProps:{align:'v'},className:'padding-8',
-                    row:[{flex:1},{html:price},{html:getSvg('gem2')}]
-                  } 
-                ]
-              }
-            ]
-          }}
-        />
-      )
-    }
-  }
+  

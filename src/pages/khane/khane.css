@@ -82,16 +82,7 @@
     overflow-x:auto;
     padding:12px;
   }
-  .home-award-card{
-    height:229px;
-    width:160px;
-    border-radius:12px;
-    margin:0 6px;
-  }
-  .home-award-card-footer{
-    background:#fff;
-    border-radius: 0 0 12px 12px;
-  }
+  
   .home-details-cards{
     margin-top:12px;
   }

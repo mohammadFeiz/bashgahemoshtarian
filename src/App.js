@@ -23,7 +23,7 @@ export default class App extends Component{
   constructor(props){
     super(props);
     this.state = {
-      isAutenticated:false,registered:true
+      isAutenticated:false,registered:true,timer:12
     }
   }
   async componentDidMount(){
@@ -37,12 +37,17 @@ export default class App extends Component{
           headers: { Authorization: `Bearer ${token}` }
         };
         let res = await Axios.get(`http://10.10.10.22:8081/sso/api/v1/user/Profile`,config);
-        debugger;
+        if(res.status === 200){isAutenticated = true}
       }
       catch(err){
+        if(err.message){
+          this.setState({error:err.message})
+          return
+        }
         isAutenticated = false;
       }
     }
+    console.log(isAutenticated)
     this.setState({
       isAutenticated,token
     })
@@ -81,7 +86,21 @@ export default class App extends Component{
   }
   render(){
     if(!this.mounted){return null}
-    let {isAutenticated,token,registered} = this.state;
+    let {isAutenticated,token,registered,error,timer} = this.state;
+    if(error){
+      setTimeout(()=>{
+        if(timer === 1){window.location.reload()}
+        this.setState({timer:timer - 1})
+      },1000)
+      return (
+        <div className='fullscreen align-vh fd-column'>
+          {error}
+          <span>{timer}</span>
+          <div style={{height:36}}></div>
+          <button className='button-1' onClick={()=>window.location.reload()}>بارگزاری مجدد</button>
+        </div>
+      )
+    }
     if(isAutenticated){
       return <Main token={token} mobile={this.tokenStorage.load('mobile')}/>
     }
@@ -120,6 +139,7 @@ class Main extends Component{
       poorsant:0,
       score:0,
       awards:[],
+      rewards:[],
       awardSorts:[
         {text:'محبوب ترین',value:'0'},
         {text:'جدید ترین',value:'1'},
@@ -136,7 +156,8 @@ class Main extends Component{
       nerkhe_tabdile_har_almas: 2000,
       pishnahade_tabdile_almas: 5000,
       saghfe_enteghale_almas:5000,
-      selected_credit_card:'1'
+      selected_credit_card:'1',
+      hasPayPassword:false,
     }
   }
   onError(message,{errorTitle}){
