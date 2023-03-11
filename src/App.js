@@ -36,7 +36,8 @@ export default class App extends Component{
         const config = {
           headers: { Authorization: `Bearer ${token}` }
         };
-        let res = await Axios.get(`http://10.10.10.22:8081/sso/api/v1/user/Profile`,config);
+        let res = await Axios.get(`http://10.10.10.22:8081/sso/api/v1/user/Profile`,config).catch((err)=>{
+        });
         if(res.status === 200){isAutenticated = true}
       }
       catch(err){
