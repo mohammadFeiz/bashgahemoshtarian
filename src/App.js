@@ -253,8 +253,8 @@ class Main extends Component{
       }
     }
   }
-  openPopup(name,parameter){
-    let {rsa_actions} = this.state;
+  async openPopup(name,parameter){
+    let {rsa_actions,apis} = this.state;
     let {addPopup} = rsa_actions;
     if(name === 'profile'){
       addPopup({
@@ -269,9 +269,11 @@ class Main extends Component{
       })
     }
     else if(name === 'reward'){
+      let res = await apis({api:'rewardDetails',parameter:parameter.id});
+      let {details,rules} = res;
       addPopup({
         type:'fullscreen',
-        body:()=><Reward {...parameter}/>,
+        body:()=><Reward {...parameter} details={details} rules={rules}/>,
         title:'جزییات جایزه'
       })
     }

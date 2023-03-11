@@ -104,8 +104,9 @@ export class RamzePardakht extends Component{
         }
     }
     async onSubmit(){
+        debugger;
         let {apis} = this.context;
-        let {newPassword} = this.state;
+        let {newPassword,currentPassword} = this.state.model;
         let res = await apis({api:'updatePayPassword',parameter:{currentPassword,newPassword}})
         if(res === true){
             this.onClose()
@@ -149,7 +150,7 @@ export class RamzePardakht extends Component{
             size:96,gap:12,
             row:[
                 {flex:1},
-                {align:'vh',html:<Icon path={mdiCheck} size={1} className='glass-icon'/>},
+                {align:'vh',html:<Icon path={mdiCheck} size={1} className='glass-icon'/>,onClick:()=>this.onSubmit()},
                 {align:'vh',html:<Icon path={mdiClose} size={1} className='glass-icon'/>,onClick:()=>this.onClose()},
                 {flex:1}
             ]

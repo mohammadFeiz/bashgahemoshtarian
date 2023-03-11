@@ -6,7 +6,7 @@ export default class RewardCard extends Component{
     static contextType = AppContext;
     horizontal(){
         let {data} = this.props;
-        let {name,details = [],price,src} = data;
+        let {name,details = [],gem,src} = data;
         return (
             <RVD
               layout={{
@@ -25,7 +25,7 @@ export default class RewardCard extends Component{
                       {html:details[0],flex:1,className:'padding-8 bold color605E5C size10'},
                       {
                         childsProps:{align:'v'},className:'padding-8',
-                        row:[{flex:1},{html:price},{html:getSvg('gem2')}]
+                        row:[{flex:1},{html:gem},{html:getSvg('gem2')}]
                       } 
                     ]
                   }
@@ -36,7 +36,7 @@ export default class RewardCard extends Component{
     }
     render(){
       let {data,type} = this.props;
-      let {name,details = [],price,src} = data;
+      let {name,details = [],price,src,gem} = data;
       if(type === 'horizontal'){
         return this.horizontal()
       }
@@ -58,7 +58,7 @@ export default class RewardCard extends Component{
                   {html:details[0],flex:1,className:'padding-8 bold color605E5C size10'},
                   {
                     childsProps:{align:'v'},className:'padding-8',
-                    row:[{flex:1},{html:price},{html:getSvg('gem2')}]
+                    row:[{flex:1},{html:gem},{html:getSvg('gem2')}]
                   } 
                 ]
               }
