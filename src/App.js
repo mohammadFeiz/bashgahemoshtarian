@@ -131,6 +131,7 @@ class Main extends Component{
     super(props);
     let Storage = AIOStorage('bashgah-storage')
     this.state = {
+      profile:{},
       apis:AIOService({apis,getState:()=>this.state,onError:this.onError.bind(this),onSuccess:this.onSuccess.bind(this),token:props.token}),
       Storage,
       mobile:props.mobile,

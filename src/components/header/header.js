@@ -11,7 +11,8 @@ import { mdiAccount, mdiAccountCircle } from "@mdi/js";
 export default class Header extends Component{
     static contextType = AppContext;
     render(){
-        let {gems,logout,user,openPopup} = this.context;
+        let {gems,logout,profile,openPopup} = this.context;
+        debugger;
         return (
             <>
                 <RVD
@@ -34,7 +35,7 @@ export default class Header extends Component{
                                                         style={{background:'none',color:'#fff',background:'none',padding:'12px 0'}}
                                                         caret={false}
                                                         type='select'
-                                                        text={user.name}
+                                                        text={profile.FirstName + ' ' + profile.LastName}
                                                         options={[
                                                             {text:'ویرایش اطلاعات کاربری',value:'0'},
                                                             {text:'رمز پرداخت',value:'1'},
